@@ -1,0 +1,17 @@
+# ninja log v7
+22	1570	7957990857439094	CMakeFiles/vanguard.dir/main.cpp.obj	6c3047122292eefc
+1	146	7957994856820379	build.ninja	710d368b6dfc4b87
+1	146	7957994856787135	C:/Users/baisa/Vanguard/build/cmake_install.cmake	710d368b6dfc4b87
+1	146	7957994856810371	C:/Users/baisa/Vanguard/build/core/cmake_install.cmake	710d368b6dfc4b87
+13	1699	7957990857369957	core/CMakeFiles/core.dir/identity.cpp.obj	4df2a6ba58473361
+1700	1777	7957990874226740	core/core.lib	c918598811edfcdb
+1777	2007	7957990874999339	vanguard.exe	613fd4347c5d7521
+2	224	7957994856820379	build.ninja	710d368b6dfc4b87
+2	224	7957994856820379	C:/Users/baisa/Vanguard/build/cmake_install.cmake	710d368b6dfc4b87
+2	224	7957994856820379	C:/Users/baisa/Vanguard/build/core/cmake_install.cmake	710d368b6dfc4b87
+5	1766	7957994857301226	CMakeFiles/vanguard.dir/main.cpp.obj	7880c10524d4220a
+1	1827	7957994857270927	storage/CMakeFiles/storage.dir/messages.cpp.obj	40d1ae68f19bcd86
+1827	1908	7957994875528467	storage/storage.lib	4feca39fb40e24f
+1908	2057	7957994876341982	vanguard.exe	3c1583f762ec5a7a
+3	1870	7957997335208303	CMakeFiles/vanguard.dir/main.cpp.obj	7880c10524d4220a
+1871	2041	7957997353886969	vanguard.exe	3c1583f762ec5a7a
