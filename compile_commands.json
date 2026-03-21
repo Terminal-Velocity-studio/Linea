@@ -1,0 +1,62 @@
+[
+{
+  "directory": "C:/Users/baisa/Vanguard/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang-cl.exe  /nologo -TP -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -IC:\\Users\\baisa\\Vanguard -IC:\\Users\\baisa\\Vanguard\\libs\\imgui -IC:\\Users\\baisa\\Vanguard\\libs\\imgui\\backends -IC:\\Users\\baisa\\Vanguard\\ui -IC:\\Users\\baisa\\Vanguard\\libs\\libsodium\\include -O0 -g -Xclang -gcodeview -std:c++20 -MDd /EHsc /FoCMakeFiles\\vanguard.dir\\main.cpp.obj /FdCMakeFiles\\vanguard.dir\\ -c -- C:\\Users\\baisa\\Vanguard\\main.cpp",
+  "file": "C:/Users/baisa/Vanguard/main.cpp",
+  "output": "C:/Users/baisa/Vanguard/build/CMakeFiles/vanguard.dir/main.cpp.obj"
+},
+{
+  "directory": "C:/Users/baisa/Vanguard/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang-cl.exe  /nologo -TP -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -IC:\\Users\\baisa\\Vanguard -IC:\\Users\\baisa\\Vanguard\\libs\\imgui -IC:\\Users\\baisa\\Vanguard\\libs\\imgui\\backends -IC:\\Users\\baisa\\Vanguard\\ui -IC:\\Users\\baisa\\Vanguard\\libs\\libsodium\\include -O0 -g -Xclang -gcodeview -std:c++20 -MDd /EHsc /FoCMakeFiles\\vanguard.dir\\libs\\imgui\\imgui.cpp.obj /FdCMakeFiles\\vanguard.dir\\ -c -- C:\\Users\\baisa\\Vanguard\\libs\\imgui\\imgui.cpp",
+  "file": "C:/Users/baisa/Vanguard/libs/imgui/imgui.cpp",
+  "output": "C:/Users/baisa/Vanguard/build/CMakeFiles/vanguard.dir/libs/imgui/imgui.cpp.obj"
+},
+{
+  "directory": "C:/Users/baisa/Vanguard/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang-cl.exe  /nologo -TP -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -IC:\\Users\\baisa\\Vanguard -IC:\\Users\\baisa\\Vanguard\\libs\\imgui -IC:\\Users\\baisa\\Vanguard\\libs\\imgui\\backends -IC:\\Users\\baisa\\Vanguard\\ui -IC:\\Users\\baisa\\Vanguard\\libs\\libsodium\\include -O0 -g -Xclang -gcodeview -std:c++20 -MDd /EHsc /FoCMakeFiles\\vanguard.dir\\libs\\imgui\\imgui_draw.cpp.obj /FdCMakeFiles\\vanguard.dir\\ -c -- C:\\Users\\baisa\\Vanguard\\libs\\imgui\\imgui_draw.cpp",
+  "file": "C:/Users/baisa/Vanguard/libs/imgui/imgui_draw.cpp",
+  "output": "C:/Users/baisa/Vanguard/build/CMakeFiles/vanguard.dir/libs/imgui/imgui_draw.cpp.obj"
+},
+{
+  "directory": "C:/Users/baisa/Vanguard/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang-cl.exe  /nologo -TP -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -IC:\\Users\\baisa\\Vanguard -IC:\\Users\\baisa\\Vanguard\\libs\\imgui -IC:\\Users\\baisa\\Vanguard\\libs\\imgui\\backends -IC:\\Users\\baisa\\Vanguard\\ui -IC:\\Users\\baisa\\Vanguard\\libs\\libsodium\\include -O0 -g -Xclang -gcodeview -std:c++20 -MDd /EHsc /FoCMakeFiles\\vanguard.dir\\libs\\imgui\\imgui_tables.cpp.obj /FdCMakeFiles\\vanguard.dir\\ -c -- C:\\Users\\baisa\\Vanguard\\libs\\imgui\\imgui_tables.cpp",
+  "file": "C:/Users/baisa/Vanguard/libs/imgui/imgui_tables.cpp",
+  "output": "C:/Users/baisa/Vanguard/build/CMakeFiles/vanguard.dir/libs/imgui/imgui_tables.cpp.obj"
+},
+{
+  "directory": "C:/Users/baisa/Vanguard/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang-cl.exe  /nologo -TP -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -IC:\\Users\\baisa\\Vanguard -IC:\\Users\\baisa\\Vanguard\\libs\\imgui -IC:\\Users\\baisa\\Vanguard\\libs\\imgui\\backends -IC:\\Users\\baisa\\Vanguard\\ui -IC:\\Users\\baisa\\Vanguard\\libs\\libsodium\\include -O0 -g -Xclang -gcodeview -std:c++20 -MDd /EHsc /FoCMakeFiles\\vanguard.dir\\libs\\imgui\\imgui_widgets.cpp.obj /FdCMakeFiles\\vanguard.dir\\ -c -- C:\\Users\\baisa\\Vanguard\\libs\\imgui\\imgui_widgets.cpp",
+  "file": "C:/Users/baisa/Vanguard/libs/imgui/imgui_widgets.cpp",
+  "output": "C:/Users/baisa/Vanguard/build/CMakeFiles/vanguard.dir/libs/imgui/imgui_widgets.cpp.obj"
+},
+{
+  "directory": "C:/Users/baisa/Vanguard/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang-cl.exe  /nologo -TP -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -IC:\\Users\\baisa\\Vanguard -IC:\\Users\\baisa\\Vanguard\\libs\\imgui -IC:\\Users\\baisa\\Vanguard\\libs\\imgui\\backends -IC:\\Users\\baisa\\Vanguard\\ui -IC:\\Users\\baisa\\Vanguard\\libs\\libsodium\\include -O0 -g -Xclang -gcodeview -std:c++20 -MDd /EHsc /FoCMakeFiles\\vanguard.dir\\libs\\imgui\\backends\\imgui_impl_win32.cpp.obj /FdCMakeFiles\\vanguard.dir\\ -c -- C:\\Users\\baisa\\Vanguard\\libs\\imgui\\backends\\imgui_impl_win32.cpp",
+  "file": "C:/Users/baisa/Vanguard/libs/imgui/backends/imgui_impl_win32.cpp",
+  "output": "C:/Users/baisa/Vanguard/build/CMakeFiles/vanguard.dir/libs/imgui/backends/imgui_impl_win32.cpp.obj"
+},
+{
+  "directory": "C:/Users/baisa/Vanguard/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang-cl.exe  /nologo -TP -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -IC:\\Users\\baisa\\Vanguard -IC:\\Users\\baisa\\Vanguard\\libs\\imgui -IC:\\Users\\baisa\\Vanguard\\libs\\imgui\\backends -IC:\\Users\\baisa\\Vanguard\\ui -IC:\\Users\\baisa\\Vanguard\\libs\\libsodium\\include -O0 -g -Xclang -gcodeview -std:c++20 -MDd /EHsc /FoCMakeFiles\\vanguard.dir\\libs\\imgui\\backends\\imgui_impl_dx11.cpp.obj /FdCMakeFiles\\vanguard.dir\\ -c -- C:\\Users\\baisa\\Vanguard\\libs\\imgui\\backends\\imgui_impl_dx11.cpp",
+  "file": "C:/Users/baisa/Vanguard/libs/imgui/backends/imgui_impl_dx11.cpp",
+  "output": "C:/Users/baisa/Vanguard/build/CMakeFiles/vanguard.dir/libs/imgui/backends/imgui_impl_dx11.cpp.obj"
+},
+{
+  "directory": "C:/Users/baisa/Vanguard/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang-cl.exe  /nologo -TP -DSODIUM_STATIC -IC:\\Users\\baisa\\Vanguard\\libs\\libsodium\\include -O0 -g -Xclang -gcodeview -std:c++20 -MDd /EHsc /Focore\\CMakeFiles\\core.dir\\identity.cpp.obj /Fdcore\\CMakeFiles\\core.dir\\core.pdb -c -- C:\\Users\\baisa\\Vanguard\\core\\identity.cpp",
+  "file": "C:/Users/baisa/Vanguard/core/identity.cpp",
+  "output": "C:/Users/baisa/Vanguard/build/core/CMakeFiles/core.dir/identity.cpp.obj"
+},
+{
+  "directory": "C:/Users/baisa/Vanguard/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang-cl.exe  /nologo -TP -IC:\\Users\\baisa\\Vanguard -O0 -g -Xclang -gcodeview -std:c++20 -MDd /EHsc /Fostorage\\CMakeFiles\\storage.dir\\messages.cpp.obj /Fdstorage\\CMakeFiles\\storage.dir\\storage.pdb -c -- C:\\Users\\baisa\\Vanguard\\storage\\messages.cpp",
+  "file": "C:/Users/baisa/Vanguard/storage/messages.cpp",
+  "output": "C:/Users/baisa/Vanguard/build/storage/CMakeFiles/storage.dir/messages.cpp.obj"
+},
+{
+  "directory": "C:/Users/baisa/Vanguard/build",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\clang-cl.exe  /nologo -TP -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -IC:\\Users\\baisa\\Vanguard\\libs\\imgui -IC:\\Users\\baisa\\Vanguard\\libs\\imgui\\backends -IC:\\Users\\baisa\\Vanguard -IC:\\Users\\baisa\\Vanguard\\ui -IC:\\Users\\baisa\\Vanguard\\libs\\libsodium\\include -O0 -g -Xclang -gcodeview -std:c++20 -MDd /EHsc /Foui\\CMakeFiles\\ui.dir\\window.cpp.obj /Fdui\\CMakeFiles\\ui.dir\\ui.pdb -c -- C:\\Users\\baisa\\Vanguard\\ui\\window.cpp",
+  "file": "C:/Users/baisa/Vanguard/ui/window.cpp",
+  "output": "C:/Users/baisa/Vanguard/build/ui/CMakeFiles/ui.dir/window.cpp.obj"
+}
+]
