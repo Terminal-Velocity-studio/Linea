@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_AR "C:/Program Files/LLVM/bin/llvm-lib.exe")
 
+# Статическая линковка - не нужен VC++ redistributable
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+
 add_subdirectory(core)
 add_subdirectory(storage)
 add_subdirectory(transport)

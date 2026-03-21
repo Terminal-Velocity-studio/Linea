@@ -66,7 +66,7 @@ static LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 void run_window(vanguard::Identity& identity, vanguard::MessageStore& store,
-                vanguard::transport::PeerTransport& transport) {
+                vanguard::transport::PeerTransport& transport, IncomingQueue& queue) {
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0, 0,
         GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr,
         L"Vanguard", nullptr };
@@ -141,7 +141,14 @@ void run_window(vanguard::Identity& identity, vanguard::MessageStore& store,
             DispatchMessage(&msg);
             continue;
         }
-
+        // Читаем входящие сообщения из очереди каждый кадр
+        {
+          vanguard::transport::RawMessage incoming;
+          while (queue.pop(incoming)) {
+             store.add(incoming.payload, incoming.sender_id);
+             scroll_to_bottom = true;
+           }
+        }
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
