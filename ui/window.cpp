@@ -5,6 +5,7 @@
 #include <d3d11.h>
 #include <dxgi.h>
 #include <string>
+#include <vector>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
@@ -64,7 +65,8 @@ static LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     return DefWindowProcW(hwnd, msg, wp, lp);
 }
 
-void run_window(vanguard::Identity& identity, vanguard::MessageStore& store) {
+void run_window(vanguard::Identity& identity, vanguard::MessageStore& store,
+                vanguard::transport::PeerTransport& transport) {
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0, 0,
         GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr,
         L"Vanguard", nullptr };
@@ -84,10 +86,9 @@ void run_window(vanguard::Identity& identity, vanguard::MessageStore& store) {
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-    // Тёмная тема
     ImGui::StyleColorsDark();
 
-    // Загружаем NotoSans с кириллицей и латиницей
+    // Шрифт NotoSans с кириллицей
     static const ImWchar noto_ranges[] = {
         0x0020, 0x00FF, // Latin
         0x0400, 0x04FF, // Cyrillic
@@ -97,27 +98,41 @@ void run_window(vanguard::Identity& identity, vanguard::MessageStore& store) {
     font_cfg.OversampleH = 2;
     font_cfg.OversampleV = 2;
     io.Fonts->AddFontFromFileTTF(
-        "C:/Users/baisa/Vanguard/assets/fonts/NotoSans-Regular.ttf", 16.0f, &font_cfg, noto_ranges);;
+        "C:/Users/baisa/Vanguard/assets/fonts/NotoSans-Regular.ttf",
+        16.0f, &font_cfg, noto_ranges);
 
-    // Добавляем NotoEmoji поверх (merge mode)
+    // NotoEmoji поверх
     static const ImWchar emoji_ranges[] = {
-        0x2300, 0x27BF, // Misc symbols
-        0x1F300, 0x1F9FF, // Emoji
+        0x2300, 0x27BF,
         0,
     };
     ImFontConfig emoji_cfg;
-    emoji_cfg.MergeMode = true; // Мержим с предыдущим шрифтом
+    emoji_cfg.MergeMode = true;
     emoji_cfg.OversampleH = 1;
     emoji_cfg.OversampleV = 1;
     io.Fonts->AddFontFromFileTTF(
-        "C:/Users/baisa/Vanguard/assets/fonts/NotoEmoji-Regular.ttf", 16.0f, &emoji_cfg, emoji_ranges);
-
+        "C:/Users/baisa/Vanguard/assets/fonts/NotoEmoji-Regular.ttf",
+        16.0f, &emoji_cfg, emoji_ranges);
 
     ImGui_ImplWin32_Init(g_hwnd);
     ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dContext);
 
+    // Список пиров (IP:port)
+    // TODO: потом заменить на DHT автообнаружение
+    struct Peer {
+        std::string host;
+        uint16_t port;
+        std::string label; // Отображаемое имя
+    };
+    std::vector<Peer> peers;
+    char peer_input[128] = {}; // Поле ввода нового пира "IP:port"
+
     char input_buf[512] = {};
     bool scroll_to_bottom = true;
+
+    // Текущий выбранный пир (с кем чатимся)
+    // -1 = чат с собой (избранное)
+    int selected_peer = -1;
 
     MSG msg = {};
     while (msg.message != WM_QUIT) {
@@ -131,17 +146,74 @@ void run_window(vanguard::Identity& identity, vanguard::MessageStore& store) {
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
+        // Левая панель — список пиров
         ImGui::SetNextWindowPos({0, 0});
-        ImGui::SetNextWindowSize(io.DisplaySize);
-        ImGui::Begin("##main", nullptr,
+        ImGui::SetNextWindowSize({220, io.DisplaySize.y});
+        ImGui::Begin("##peers", nullptr,
             ImGuiWindowFlags_NoTitleBar |
             ImGuiWindowFlags_NoResize |
             ImGuiWindowFlags_NoMove);
 
-        // Заголовок
         ImGui::TextColored({0.4f, 0.8f, 1.0f, 1.0f}, "Vanguard");
+        ImGui::TextDisabled("ID: %.8s...", identity.id().c_str());
+        ImGui::Separator();
+
+        // Избранное (чат с собой)
+        bool saved_selected = (selected_peer == -1);
+        if (ImGui::Selectable("Saved Messages", saved_selected)) {
+            selected_peer = -1;
+        }
+
+        ImGui::Separator();
+        ImGui::TextDisabled("Peers:");
+
+        // Список пиров
+        for (int i = 0; i < (int)peers.size(); i++) {
+            std::string label = peers[i].host + ":" + std::to_string(peers[i].port);
+            bool is_selected = (selected_peer == i);
+            if (ImGui::Selectable(label.c_str(), is_selected)) {
+                selected_peer = i;
+                scroll_to_bottom = true;
+            }
+        }
+
+        ImGui::Separator();
+
+        // Добавление нового пира
+        ImGui::SetNextItemWidth(140);
+        ImGui::InputText("##peer_input", peer_input, sizeof(peer_input));
         ImGui::SameLine();
-        ImGui::TextDisabled("| Saved | ID: %s...", identity.id().substr(0, 16).c_str());
+        if (ImGui::Button("+") && peer_input[0]) {
+            // Парсим "IP:port"
+            std::string s(peer_input);
+            auto sep = s.find(':');
+            if (sep != std::string::npos) {
+                Peer p;
+                p.host = s.substr(0, sep);
+                p.port = (uint16_t)std::stoi(s.substr(sep + 1));
+                peers.push_back(p);
+                peer_input[0] = '\0';
+            }
+        }
+
+        ImGui::End();
+
+        // Правая панель — чат
+        ImGui::SetNextWindowPos({220, 0});
+        ImGui::SetNextWindowSize({io.DisplaySize.x - 220, io.DisplaySize.y});
+        ImGui::Begin("##chat", nullptr,
+            ImGuiWindowFlags_NoTitleBar |
+            ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove);
+
+        // Заголовок чата
+        if (selected_peer == -1) {
+            ImGui::TextColored({0.4f, 0.8f, 1.0f, 1.0f}, "Saved Messages");
+        } else {
+            ImGui::TextColored({0.4f, 0.8f, 1.0f, 1.0f}, "%s:%d",
+                peers[selected_peer].host.c_str(),
+                peers[selected_peer].port);
+        }
         ImGui::Separator();
 
         // Область сообщений
@@ -172,7 +244,26 @@ void run_window(vanguard::Identity& identity, vanguard::MessageStore& store) {
         ImGui::SameLine();
 
         if ((ImGui::Button("Send", {60, 0}) || enter) && input_buf[0]) {
-            store.add(std::string(input_buf), identity.id());
+            std::string text(input_buf);
+
+            if (selected_peer == -1) {
+                // Сохраняем локально
+                store.add(text, identity.id());
+            } else {
+                // Отправляем через transport к выбранному пиру
+                vanguard::transport::PeerAddress addr{
+                    peers[selected_peer].host,
+                    peers[selected_peer].port
+                };
+                vanguard::transport::RawMessage raw_msg{
+                    identity.id(),
+                    text
+                };
+                transport.send(addr, raw_msg);
+                // Показываем у себя тоже
+                store.add(text, identity.id());
+            }
+
             input_buf[0] = '\0';
             scroll_to_bottom = true;
             ImGui::SetKeyboardFocusHere(-1);

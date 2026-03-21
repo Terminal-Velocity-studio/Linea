@@ -8,6 +8,7 @@ set(CMAKE_AR "C:/Program Files/LLVM/bin/llvm-lib.exe")
 
 add_subdirectory(core)
 add_subdirectory(storage)
+add_subdirectory(transport)
 add_subdirectory(ui)
 
 add_executable(vanguard WIN32 main.cpp
@@ -19,7 +20,7 @@ add_executable(vanguard WIN32 main.cpp
     libs/imgui/backends/imgui_impl_dx11.cpp
 )
 
-target_link_libraries(vanguard PRIVATE ui core storage)
+target_link_libraries(vanguard PRIVATE ui core storage transport)
 target_include_directories(vanguard PRIVATE ${CMAKE_SOURCE_DIR})
 target_compile_options(vanguard PRIVATE /EHsc)
 target_compile_definitions(vanguard PRIVATE SODIUM_STATIC IMGUI_USE_WCHAR32)

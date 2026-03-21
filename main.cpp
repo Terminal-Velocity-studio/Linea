@@ -1,6 +1,8 @@
 #include <windows.h>
+#include <thread>
 #include "core/identity.hpp"
 #include "storage/messages.hpp"
+#include "transport/peer.hpp"
 #include "ui/window.hpp"
 
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -15,11 +17,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         identity.save(identity_path);
     }
 
-    // Загрузка истории сообщений (чат с собой - Тайлер Дёрден режим)
+    // Загрузка истории сообщений
     vanguard::MessageStore store("vanguard_messages.bin");
 
-    // Запуск GUI
-    vanguard::ui::run_window(identity, store);
+    // Запуск транспортного слоя на порту 443
+    // 443 - HTTPS порт, трафик сложнее заблокировать через DPI
+    vanguard::transport::PeerTransport transport(443);
 
+    // Когда приходит сообщение от другой ноды - сохраняем
+    transport.on_message([&](vanguard::transport::RawMessage msg) {
+        store.add(msg.payload, msg.sender_id);
+    });
+
+    // Запускаем транспорт в фоновом потоке
+    transport.run();
+
+    // Запуск GUI - передаём transport чтобы UI мог отправлять
+    vanguard::ui::run_window(identity, store, transport);
+
+    transport.stop();
     return 0;
 }
