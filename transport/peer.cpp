@@ -1,6 +1,12 @@
 #include "peer.hpp"
 #include <asio.hpp>
 #include <thread>
+#include <fstream>
+
+static void log(const std::string& msg) {
+    std::ofstream f("vanguard_log.txt", std::ios::app);
+    f << msg << "\n";
+}
 
 namespace vanguard::transport {
 
@@ -19,7 +25,9 @@ struct PeerTransport::Impl {
 };
 
 PeerTransport::PeerTransport(uint16_t port)
-    : impl_(new Impl(port)) {}
+    : impl_(new Impl(port)) {
+    log("Transport started on port " + std::to_string(port));
+}
 
 PeerTransport::~PeerTransport() {
     stop();
@@ -30,12 +38,16 @@ void PeerTransport::on_message(std::function<void(RawMessage)> callback) {
     impl_->callback = callback;
 }
 
-// Формат пакета: "SENDER_ID|PAYLOAD"
 void PeerTransport::send(const PeerAddress& to, const RawMessage& msg) {
-    auto ep = asio::ip::udp::endpoint(
-        asio::ip::make_address(to.host), to.port);
-    std::string packet = msg.sender_id + "|" + msg.payload;
-    impl_->socket.send_to(asio::buffer(packet), ep);
+    try {
+        auto ep = asio::ip::udp::endpoint(
+            asio::ip::make_address(to.host), to.port);
+        std::string packet = msg.sender_id + "|" + msg.payload;
+        impl_->socket.send_to(asio::buffer(packet), ep);
+        log("Sent to " + to.host + ":" + std::to_string(to.port));
+    } catch (std::exception& e) {
+        log("Send error: " + std::string(e.what()));
+    }
 }
 
 void PeerTransport::run() {
@@ -45,13 +57,19 @@ void PeerTransport::run() {
             impl_->remote_ep,
             [&, do_recv](std::error_code ec, size_t bytes) {
                 if (!ec && bytes > 0) {
-                    std::string data(impl_->recv_buf.data(), bytes);
-                    auto sep = data.find('|');
-                    if (sep != std::string::npos && impl_->callback) {
-                        RawMessage msg;
-                        msg.sender_id = data.substr(0, sep);
-                        msg.payload = data.substr(sep + 1);
-                        impl_->callback(msg);
+                    try {
+                        std::string data(impl_->recv_buf.data(), bytes);
+                        log("Received: " + data.substr(0, 32));
+                        auto sep = data.find('|');
+                        if (sep != std::string::npos && impl_->callback) {
+                            RawMessage msg;
+                            msg.sender_id = data.substr(0, sep);
+                            msg.payload = data.substr(sep + 1);
+                            impl_->callback(msg);
+                            log("Callback called OK");
+                        }
+                    } catch (std::exception& e) {
+                        log("Recv callback error: " + std::string(e.what()));
                     }
                 }
                 do_recv();
@@ -60,9 +78,12 @@ void PeerTransport::run() {
     };
 
     do_recv();
-
     impl_->io_thread = std::thread([&]() {
-        impl_->io_ctx.run();
+        try {
+            impl_->io_ctx.run();
+        } catch (std::exception& e) {
+            log("IO thread error: " + std::string(e.what()));
+        }
     });
 }
 
