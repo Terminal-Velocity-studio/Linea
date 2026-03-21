@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/Program Files/LLVM/lib/clang/22/include",
+                "C:/Program Files (x86)/Windows Kits/10/Include/10.0.26100.0/ucrt",
+                "C:/Program Files/Microsoft Visual Studio/18/Insiders/VC/Tools/MSVC/14.50.35717/include",
+                "${workspaceFolder}/libs/imgui",
+                "${workspaceFolder}/libs/imgui/backends"
+            ],
+            "defines": ["SODIUM_STATIC", "IMGUI_USE_WCHAR32"],
+            "compilerPath": "C:/Program Files/LLVM/bin/clang-cl.exe",
+            "cppStandard": "c++20"
+        }
+    ],
+    "version": 4
+}
