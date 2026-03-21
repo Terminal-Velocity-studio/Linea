@@ -7,3 +7,6 @@ C:/Users/baisa/Vanguard/build/core/CMakeFiles/rebuild_cache.dir
 C:/Users/baisa/Vanguard/build/storage/CMakeFiles/storage.dir
 C:/Users/baisa/Vanguard/build/storage/CMakeFiles/edit_cache.dir
 C:/Users/baisa/Vanguard/build/storage/CMakeFiles/rebuild_cache.dir
+C:/Users/baisa/Vanguard/build/ui/CMakeFiles/ui.dir
+C:/Users/baisa/Vanguard/build/ui/CMakeFiles/edit_cache.dir
+C:/Users/baisa/Vanguard/build/ui/CMakeFiles/rebuild_cache.dir

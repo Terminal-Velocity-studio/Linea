@@ -3,7 +3,8 @@
 	[
 		"C:/Users/baisa/Vanguard/build/cmake_install.cmake",
 		"C:/Users/baisa/Vanguard/build/core/cmake_install.cmake",
-		"C:/Users/baisa/Vanguard/build/storage/cmake_install.cmake"
+		"C:/Users/baisa/Vanguard/build/storage/cmake_install.cmake",
+		"C:/Users/baisa/Vanguard/build/ui/cmake_install.cmake"
 	],
 	"Parallel" : false
 }
