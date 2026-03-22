@@ -47,13 +47,13 @@ cmake_ninja_workdir = C$:\Users\baisa\Vanguard\build\
 #############################################
 # Order-only phony target for vanguard
 
-build cmake_object_order_depends_target_vanguard: phony || cmake_object_order_depends_target_core cmake_object_order_depends_target_storage cmake_object_order_depends_target_transport cmake_object_order_depends_target_ui
+build cmake_object_order_depends_target_vanguard: phony || cmake_object_order_depends_target_core cmake_object_order_depends_target_net cmake_object_order_depends_target_storage cmake_object_order_depends_target_ui
 
 build CMakeFiles\vanguard.dir\main.cpp.obj: CXX_COMPILER__vanguard_unscanned_Debug C$:\Users\baisa\Vanguard\main.cpp || cmake_object_order_depends_target_vanguard
   CONFIG = Debug
   DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MT /EHsc
-  INCLUDES = -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard\ui -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include
   OBJECT_DIR = CMakeFiles\vanguard.dir
   OBJECT_FILE_DIR = CMakeFiles\vanguard.dir
   TARGET_COMPILE_PDB = CMakeFiles\vanguard.dir\
@@ -63,8 +63,8 @@ build CMakeFiles\vanguard.dir\main.cpp.obj: CXX_COMPILER__vanguard_unscanned_Deb
 build CMakeFiles\vanguard.dir\libs\imgui\imgui.cpp.obj: CXX_COMPILER__vanguard_unscanned_Debug C$:\Users\baisa\Vanguard\libs\imgui\imgui.cpp || cmake_object_order_depends_target_vanguard
   CONFIG = Debug
   DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MT /EHsc
-  INCLUDES = -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard\ui -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include
   OBJECT_DIR = CMakeFiles\vanguard.dir
   OBJECT_FILE_DIR = CMakeFiles\vanguard.dir\libs\imgui
   TARGET_COMPILE_PDB = CMakeFiles\vanguard.dir\
@@ -74,8 +74,8 @@ build CMakeFiles\vanguard.dir\libs\imgui\imgui.cpp.obj: CXX_COMPILER__vanguard_u
 build CMakeFiles\vanguard.dir\libs\imgui\imgui_draw.cpp.obj: CXX_COMPILER__vanguard_unscanned_Debug C$:\Users\baisa\Vanguard\libs\imgui\imgui_draw.cpp || cmake_object_order_depends_target_vanguard
   CONFIG = Debug
   DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MT /EHsc
-  INCLUDES = -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard\ui -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include
   OBJECT_DIR = CMakeFiles\vanguard.dir
   OBJECT_FILE_DIR = CMakeFiles\vanguard.dir\libs\imgui
   TARGET_COMPILE_PDB = CMakeFiles\vanguard.dir\
@@ -85,8 +85,8 @@ build CMakeFiles\vanguard.dir\libs\imgui\imgui_draw.cpp.obj: CXX_COMPILER__vangu
 build CMakeFiles\vanguard.dir\libs\imgui\imgui_tables.cpp.obj: CXX_COMPILER__vanguard_unscanned_Debug C$:\Users\baisa\Vanguard\libs\imgui\imgui_tables.cpp || cmake_object_order_depends_target_vanguard
   CONFIG = Debug
   DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MT /EHsc
-  INCLUDES = -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard\ui -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include
   OBJECT_DIR = CMakeFiles\vanguard.dir
   OBJECT_FILE_DIR = CMakeFiles\vanguard.dir\libs\imgui
   TARGET_COMPILE_PDB = CMakeFiles\vanguard.dir\
@@ -96,8 +96,8 @@ build CMakeFiles\vanguard.dir\libs\imgui\imgui_tables.cpp.obj: CXX_COMPILER__van
 build CMakeFiles\vanguard.dir\libs\imgui\imgui_widgets.cpp.obj: CXX_COMPILER__vanguard_unscanned_Debug C$:\Users\baisa\Vanguard\libs\imgui\imgui_widgets.cpp || cmake_object_order_depends_target_vanguard
   CONFIG = Debug
   DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MT /EHsc
-  INCLUDES = -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard\ui -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include
   OBJECT_DIR = CMakeFiles\vanguard.dir
   OBJECT_FILE_DIR = CMakeFiles\vanguard.dir\libs\imgui
   TARGET_COMPILE_PDB = CMakeFiles\vanguard.dir\
@@ -107,8 +107,8 @@ build CMakeFiles\vanguard.dir\libs\imgui\imgui_widgets.cpp.obj: CXX_COMPILER__va
 build CMakeFiles\vanguard.dir\libs\imgui\backends\imgui_impl_sdl3.cpp.obj: CXX_COMPILER__vanguard_unscanned_Debug C$:\Users\baisa\Vanguard\libs\imgui\backends\imgui_impl_sdl3.cpp || cmake_object_order_depends_target_vanguard
   CONFIG = Debug
   DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MT /EHsc
-  INCLUDES = -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard\ui -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include
   OBJECT_DIR = CMakeFiles\vanguard.dir
   OBJECT_FILE_DIR = CMakeFiles\vanguard.dir\libs\imgui\backends
   TARGET_COMPILE_PDB = CMakeFiles\vanguard.dir\
@@ -118,8 +118,8 @@ build CMakeFiles\vanguard.dir\libs\imgui\backends\imgui_impl_sdl3.cpp.obj: CXX_C
 build CMakeFiles\vanguard.dir\libs\imgui\backends\imgui_impl_sdlrenderer3.cpp.obj: CXX_COMPILER__vanguard_unscanned_Debug C$:\Users\baisa\Vanguard\libs\imgui\backends\imgui_impl_sdlrenderer3.cpp || cmake_object_order_depends_target_vanguard
   CONFIG = Debug
   DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MT /EHsc
-  INCLUDES = -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard\ui -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\`C:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include
   OBJECT_DIR = CMakeFiles\vanguard.dir
   OBJECT_FILE_DIR = CMakeFiles\vanguard.dir\libs\imgui\backends
   TARGET_COMPILE_PDB = CMakeFiles\vanguard.dir\
@@ -134,11 +134,11 @@ build CMakeFiles\vanguard.dir\libs\imgui\backends\imgui_impl_sdlrenderer3.cpp.ob
 #############################################
 # Link the executable vanguard.exe
 
-build vanguard.exe: CXX_EXECUTABLE_LINKER__vanguard_Debug CMakeFiles\vanguard.dir\main.cpp.obj CMakeFiles\vanguard.dir\libs\imgui\imgui.cpp.obj CMakeFiles\vanguard.dir\libs\imgui\imgui_draw.cpp.obj CMakeFiles\vanguard.dir\libs\imgui\imgui_tables.cpp.obj CMakeFiles\vanguard.dir\libs\imgui\imgui_widgets.cpp.obj CMakeFiles\vanguard.dir\libs\imgui\backends\imgui_impl_sdl3.cpp.obj CMakeFiles\vanguard.dir\libs\imgui\backends\imgui_impl_sdlrenderer3.cpp.obj | ui\ui.lib core\core.lib storage\storage.lib transport\transport.lib C$:\Users\baisa\Vanguard\libs\SDL3-3.2.10\lib\x64\SDL3.lib core\core.lib C$:\Users\baisa\Vanguard\libs\libsodium\x64\Release\v143\static\libsodium.lib || core\core.lib storage\storage.lib transport\transport.lib ui\ui.lib
+build vanguard.exe: CXX_EXECUTABLE_LINKER__vanguard_Debug CMakeFiles\vanguard.dir\main.cpp.obj CMakeFiles\vanguard.dir\libs\imgui\imgui.cpp.obj CMakeFiles\vanguard.dir\libs\imgui\imgui_draw.cpp.obj CMakeFiles\vanguard.dir\libs\imgui\imgui_tables.cpp.obj CMakeFiles\vanguard.dir\libs\imgui\imgui_widgets.cpp.obj CMakeFiles\vanguard.dir\libs\imgui\backends\imgui_impl_sdl3.cpp.obj CMakeFiles\vanguard.dir\libs\imgui\backends\imgui_impl_sdlrenderer3.cpp.obj | core\core.lib net\net.lib storage\storage.lib ui\ui.lib net\net.lib storage\storage.lib core\core.lib C$:\Users\baisa\Vanguard\libs\libsodium\x64\Release\v143\static\libsodium.lib C$:\Users\baisa\Vanguard\libs\SDL3-3.2.10\lib\x64\SDL3.lib || core\core.lib net\net.lib storage\storage.lib ui\ui.lib
   CONFIG = Debug
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MT
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
-  LINK_LIBRARIES = ui\ui.lib  core\core.lib  storage\storage.lib  transport\transport.lib  C:\Users\baisa\Vanguard\libs\SDL3-3.2.10\lib\x64\SDL3.lib  core\core.lib  C:\Users\baisa\Vanguard\libs\libsodium\x64\Release\v143\static\libsodium.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  LINK_LIBRARIES = core\core.lib  net\net.lib  storage\storage.lib  ui\ui.lib  dbghelp.lib  net\net.lib  storage\storage.lib  core\core.lib  C:\Users\baisa\Vanguard\libs\libsodium\x64\Release\v143\static\libsodium.lib  C:\Users\baisa\Vanguard\libs\SDL3-3.2.10\lib\x64\SDL3.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
   OBJECT_DIR = CMakeFiles\vanguard.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
@@ -188,9 +188,9 @@ build cmake_object_order_depends_target_core: phony || .
 
 build core\CMakeFiles\core.dir\identity.cpp.obj: CXX_COMPILER__core_unscanned_Debug C$:\Users\baisa\Vanguard\core\identity.cpp || cmake_object_order_depends_target_core
   CONFIG = Debug
-  DEFINES = -DSODIUM_STATIC
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MT /EHsc
-  INCLUDES = -IC:\Users\baisa\Vanguard\libs\libsodium\include
+  DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard
   OBJECT_DIR = core\CMakeFiles\core.dir
   OBJECT_FILE_DIR = core\CMakeFiles\core.dir
   TARGET_COMPILE_PDB = core\CMakeFiles\core.dir\core.pdb
@@ -247,18 +247,110 @@ build core\rebuild_cache: phony core\CMakeFiles\rebuild_cache.util
 # =============================================================================
 
 # =============================================================================
+# Object build statements for STATIC_LIBRARY target net
+
+
+#############################################
+# Order-only phony target for net
+
+build cmake_object_order_depends_target_net: phony || cmake_object_order_depends_target_core
+
+build net\CMakeFiles\net.dir\socket.cpp.obj: CXX_COMPILER__net_unscanned_Debug C$:\Users\baisa\Vanguard\net\socket.cpp || cmake_object_order_depends_target_net
+  CONFIG = Debug
+  DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard\libs\asio-master\include -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard
+  OBJECT_DIR = net\CMakeFiles\net.dir
+  OBJECT_FILE_DIR = net\CMakeFiles\net.dir
+  TARGET_COMPILE_PDB = net\CMakeFiles\net.dir\net.pdb
+  TARGET_PDB = net\net.pdb
+  TARGET_SUPPORT_DIR = net\CMakeFiles\net.dir
+
+build net\CMakeFiles\net.dir\reliable.cpp.obj: CXX_COMPILER__net_unscanned_Debug C$:\Users\baisa\Vanguard\net\reliable.cpp || cmake_object_order_depends_target_net
+  CONFIG = Debug
+  DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard\libs\asio-master\include -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard
+  OBJECT_DIR = net\CMakeFiles\net.dir
+  OBJECT_FILE_DIR = net\CMakeFiles\net.dir
+  TARGET_COMPILE_PDB = net\CMakeFiles\net.dir\net.pdb
+  TARGET_PDB = net\net.pdb
+  TARGET_SUPPORT_DIR = net\CMakeFiles\net.dir
+
+build net\CMakeFiles\net.dir\peer.cpp.obj: CXX_COMPILER__net_unscanned_Debug C$:\Users\baisa\Vanguard\net\peer.cpp || cmake_object_order_depends_target_net
+  CONFIG = Debug
+  DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard\libs\asio-master\include -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard
+  OBJECT_DIR = net\CMakeFiles\net.dir
+  OBJECT_FILE_DIR = net\CMakeFiles\net.dir
+  TARGET_COMPILE_PDB = net\CMakeFiles\net.dir\net.pdb
+  TARGET_PDB = net\net.pdb
+  TARGET_SUPPORT_DIR = net\CMakeFiles\net.dir
+
+
+# =============================================================================
+# Link build statements for STATIC_LIBRARY target net
+
+
+#############################################
+# Link the static library net\net.lib
+
+build net\net.lib: CXX_STATIC_LIBRARY_LINKER__net_Debug net\CMakeFiles\net.dir\socket.cpp.obj net\CMakeFiles\net.dir\reliable.cpp.obj net\CMakeFiles\net.dir\peer.cpp.obj || core\core.lib
+  CONFIG = Debug
+  LANGUAGE_COMPILE_FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MT
+  LINK_FLAGS = /machine:x64
+  OBJECT_DIR = net\CMakeFiles\net.dir
+  POST_BUILD = cd .
+  PRE_LINK = cd .
+  TARGET_COMPILE_PDB = net\CMakeFiles\net.dir\net.pdb
+  TARGET_FILE = net\net.lib
+  TARGET_PDB = net\net.pdb
+  TARGET_SUPPORT_DIR = net\CMakeFiles\net.dir
+
+
+#############################################
+# Utility command for edit_cache
+
+build net\CMakeFiles\edit_cache.util: CUSTOM_COMMAND
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\baisa\Vanguard\build\net && "C:\Program Files\CMake\bin\cmake-gui.exe" -SC:\Users\baisa\Vanguard -BC:\Users\baisa\Vanguard\build"
+  DESC = Running CMake cache editor...
+  pool = console
+  restat = 1
+
+build net\edit_cache: phony net\CMakeFiles\edit_cache.util
+
+
+#############################################
+# Utility command for rebuild_cache
+
+build net\CMakeFiles\rebuild_cache.util: CUSTOM_COMMAND
+  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\baisa\Vanguard\build\net && "C:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -SC:\Users\baisa\Vanguard -BC:\Users\baisa\Vanguard\build"
+  DESC = Running CMake to regenerate build system...
+  pool = console
+  restat = 1
+
+build net\rebuild_cache: phony net\CMakeFiles\rebuild_cache.util
+
+# =============================================================================
+# Write statements declared in CMakeLists.txt:
+# C:/Users/baisa/Vanguard/CMakeLists.txt
+# =============================================================================
+
+# =============================================================================
 # Object build statements for STATIC_LIBRARY target storage
 
 
 #############################################
 # Order-only phony target for storage
 
-build cmake_object_order_depends_target_storage: phony || .
+build cmake_object_order_depends_target_storage: phony || cmake_object_order_depends_target_core
 
-build storage\CMakeFiles\storage.dir\messages.cpp.obj: CXX_COMPILER__storage_unscanned_Debug C$:\Users\baisa\Vanguard\storage\messages.cpp || cmake_object_order_depends_target_storage
+build storage\CMakeFiles\storage.dir\message.cpp.obj: CXX_COMPILER__storage_unscanned_Debug C$:\Users\baisa\Vanguard\storage\message.cpp || cmake_object_order_depends_target_storage
   CONFIG = Debug
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MT /EHsc
-  INCLUDES = -IC:\Users\baisa\Vanguard
+  DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\libsodium\include
   OBJECT_DIR = storage\CMakeFiles\storage.dir
   OBJECT_FILE_DIR = storage\CMakeFiles\storage.dir
   TARGET_COMPILE_PDB = storage\CMakeFiles\storage.dir\storage.pdb
@@ -273,7 +365,7 @@ build storage\CMakeFiles\storage.dir\messages.cpp.obj: CXX_COMPILER__storage_uns
 #############################################
 # Link the static library storage\storage.lib
 
-build storage\storage.lib: CXX_STATIC_LIBRARY_LINKER__storage_Debug storage\CMakeFiles\storage.dir\messages.cpp.obj
+build storage\storage.lib: CXX_STATIC_LIBRARY_LINKER__storage_Debug storage\CMakeFiles\storage.dir\message.cpp.obj || core\core.lib
   CONFIG = Debug
   LANGUAGE_COMPILE_FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MT
   LINK_FLAGS = /machine:x64
@@ -315,99 +407,19 @@ build storage\rebuild_cache: phony storage\CMakeFiles\rebuild_cache.util
 # =============================================================================
 
 # =============================================================================
-# Object build statements for STATIC_LIBRARY target transport
-
-
-#############################################
-# Order-only phony target for transport
-
-build cmake_object_order_depends_target_transport: phony || cmake_object_order_depends_target_core
-
-build transport\CMakeFiles\transport.dir\peer.cpp.obj: CXX_COMPILER__transport_unscanned_Debug C$:\Users\baisa\Vanguard\transport\peer.cpp || cmake_object_order_depends_target_transport
-  CONFIG = Debug
-  DEFINES = -DASIO_STANDALONE -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MT /EHsc
-  INCLUDES = -IC:\Users\baisa\Vanguard\libs\asio-master\include -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard
-  OBJECT_DIR = transport\CMakeFiles\transport.dir
-  OBJECT_FILE_DIR = transport\CMakeFiles\transport.dir
-  TARGET_COMPILE_PDB = transport\CMakeFiles\transport.dir\transport.pdb
-  TARGET_PDB = transport\transport.pdb
-  TARGET_SUPPORT_DIR = transport\CMakeFiles\transport.dir
-
-build transport\CMakeFiles\transport.dir\reliable.cpp.obj: CXX_COMPILER__transport_unscanned_Debug C$:\Users\baisa\Vanguard\transport\reliable.cpp || cmake_object_order_depends_target_transport
-  CONFIG = Debug
-  DEFINES = -DASIO_STANDALONE -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MT /EHsc
-  INCLUDES = -IC:\Users\baisa\Vanguard\libs\asio-master\include -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard
-  OBJECT_DIR = transport\CMakeFiles\transport.dir
-  OBJECT_FILE_DIR = transport\CMakeFiles\transport.dir
-  TARGET_COMPILE_PDB = transport\CMakeFiles\transport.dir\transport.pdb
-  TARGET_PDB = transport\transport.pdb
-  TARGET_SUPPORT_DIR = transport\CMakeFiles\transport.dir
-
-
-# =============================================================================
-# Link build statements for STATIC_LIBRARY target transport
-
-
-#############################################
-# Link the static library transport\transport.lib
-
-build transport\transport.lib: CXX_STATIC_LIBRARY_LINKER__transport_Debug transport\CMakeFiles\transport.dir\peer.cpp.obj transport\CMakeFiles\transport.dir\reliable.cpp.obj || core\core.lib
-  CONFIG = Debug
-  LANGUAGE_COMPILE_FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MT
-  LINK_FLAGS = /machine:x64
-  OBJECT_DIR = transport\CMakeFiles\transport.dir
-  POST_BUILD = cd .
-  PRE_LINK = cd .
-  TARGET_COMPILE_PDB = transport\CMakeFiles\transport.dir\transport.pdb
-  TARGET_FILE = transport\transport.lib
-  TARGET_PDB = transport\transport.pdb
-  TARGET_SUPPORT_DIR = transport\CMakeFiles\transport.dir
-
-
-#############################################
-# Utility command for edit_cache
-
-build transport\CMakeFiles\edit_cache.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\baisa\Vanguard\build\transport && "C:\Program Files\CMake\bin\cmake-gui.exe" -SC:\Users\baisa\Vanguard -BC:\Users\baisa\Vanguard\build"
-  DESC = Running CMake cache editor...
-  pool = console
-  restat = 1
-
-build transport\edit_cache: phony transport\CMakeFiles\edit_cache.util
-
-
-#############################################
-# Utility command for rebuild_cache
-
-build transport\CMakeFiles\rebuild_cache.util: CUSTOM_COMMAND
-  COMMAND = C:\WINDOWS\system32\cmd.exe /C "cd /D C:\Users\baisa\Vanguard\build\transport && "C:\Program Files\CMake\bin\cmake.exe" --regenerate-during-build -SC:\Users\baisa\Vanguard -BC:\Users\baisa\Vanguard\build"
-  DESC = Running CMake to regenerate build system...
-  pool = console
-  restat = 1
-
-build transport\rebuild_cache: phony transport\CMakeFiles\rebuild_cache.util
-
-# =============================================================================
-# Write statements declared in CMakeLists.txt:
-# C:/Users/baisa/Vanguard/CMakeLists.txt
-# =============================================================================
-
-# =============================================================================
 # Object build statements for STATIC_LIBRARY target ui
 
 
 #############################################
 # Order-only phony target for ui
 
-build cmake_object_order_depends_target_ui: phony || cmake_object_order_depends_target_core cmake_object_order_depends_target_storage
+build cmake_object_order_depends_target_ui: phony || cmake_object_order_depends_target_core cmake_object_order_depends_target_net cmake_object_order_depends_target_storage
 
 build ui\CMakeFiles\ui.dir\window.cpp.obj: CXX_COMPILER__ui_unscanned_Debug C$:\Users\baisa\Vanguard\ui\window.cpp || cmake_object_order_depends_target_ui
   CONFIG = Debug
-  DEFINES = -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC
-  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -std:c++20 -MT /EHsc
-  INCLUDES = -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\ui -IC:\Users\baisa\Vanguard\libs\libsodium\include
+  DEFINES = -DASIO_STANDALONE -DIMGUI_USE_WCHAR32 -DSODIUM_STATIC -D_WIN32_WINNT=0x0601
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -clang:-std=c++23 -MT /EHsc
+  INCLUDES = -IC:\Users\baisa\Vanguard\libs\imgui -IC:\Users\baisa\Vanguard\libs\imgui\backends -IC:\Users\baisa\Vanguard\libs\SDL3-3.2.10\include -IC:\Users\baisa\Vanguard -IC:\Users\baisa\Vanguard\libs\libsodium\include -IC:\Users\baisa\Vanguard\libs\asio-master\include
   OBJECT_DIR = ui\CMakeFiles\ui.dir
   OBJECT_FILE_DIR = ui\CMakeFiles\ui.dir
   TARGET_COMPILE_PDB = ui\CMakeFiles\ui.dir\ui.pdb
@@ -422,7 +434,7 @@ build ui\CMakeFiles\ui.dir\window.cpp.obj: CXX_COMPILER__ui_unscanned_Debug C$:\
 #############################################
 # Link the static library ui\ui.lib
 
-build ui\ui.lib: CXX_STATIC_LIBRARY_LINKER__ui_Debug ui\CMakeFiles\ui.dir\window.cpp.obj || core\core.lib storage\storage.lib
+build ui\ui.lib: CXX_STATIC_LIBRARY_LINKER__ui_Debug ui\CMakeFiles\ui.dir\window.cpp.obj || core\core.lib net\net.lib storage\storage.lib
   CONFIG = Debug
   LANGUAGE_COMPILE_FLAGS = /DWIN32 /D_WINDOWS /EHsc /Zi /Ob0 /Od /RTC1 -MT
   LINK_FLAGS = /machine:x64
@@ -465,13 +477,13 @@ build core: phony core\core.lib
 
 build core.lib: phony core\core.lib
 
+build net: phony net\net.lib
+
+build net.lib: phony net\net.lib
+
 build storage: phony storage\storage.lib
 
 build storage.lib: phony storage\storage.lib
-
-build transport: phony transport\transport.lib
-
-build transport.lib: phony transport\transport.lib
 
 build ui: phony ui\ui.lib
 
@@ -487,7 +499,7 @@ build vanguard: phony vanguard.exe
 #############################################
 # Folder: C:/Users/baisa/Vanguard/build
 
-build all: phony vanguard.exe core\all storage\all transport\all ui\all
+build all: phony vanguard.exe core\all net\all storage\all ui\all
 
 # =============================================================================
 
@@ -499,16 +511,16 @@ build core\all: phony core\core.lib
 # =============================================================================
 
 #############################################
-# Folder: C:/Users/baisa/Vanguard/build/storage
+# Folder: C:/Users/baisa/Vanguard/build/net
 
-build storage\all: phony storage\storage.lib
+build net\all: phony net\net.lib
 
 # =============================================================================
 
 #############################################
-# Folder: C:/Users/baisa/Vanguard/build/transport
+# Folder: C:/Users/baisa/Vanguard/build/storage
 
-build transport\all: phony transport\transport.lib
+build storage\all: phony storage\storage.lib
 
 # =============================================================================
 
@@ -524,14 +536,14 @@ build ui\all: phony ui\ui.lib
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja C$:\Users\baisa\Vanguard\build\cmake_install.cmake C$:\Users\baisa\Vanguard\build\core\cmake_install.cmake C$:\Users\baisa\Vanguard\build\storage\cmake_install.cmake C$:\Users\baisa\Vanguard\build\transport\cmake_install.cmake C$:\Users\baisa\Vanguard\build\ui\cmake_install.cmake: RERUN_CMAKE | C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCXXCompiler.cmake.in C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCXXCompilerABI.cpp C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCXXInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCommonLanguageInclude.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCompilerIdDetection.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineCXXCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineCompilerABI.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineCompilerId.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineCompilerSupport.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineRCCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineSystem.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeFindBinUtils.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeGenericSystem.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeInitializeConfigs.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeLanguageInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeNinjaFindMake.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeParseImplicitIncludeInfo.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeParseImplicitLinkInfo.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeParseLibraryArchitecture.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeRCCompiler.cmake.in C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeRCInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeSystem.cmake.in C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeSystemSpecificInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeSystemSpecificInitialize.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeTestCXXCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeTestCompilerCommon.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeTestRCCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\ADSP-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\ARMCC-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\ARMClang-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\AppleClang-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Borland-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\CMakeCommonCompilerMacros.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-CXX-CXXImportStd.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-CXX-FeatureTests.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-CXX-TestableFeatures.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-DetermineCompilerInternal.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-FindBinUtils.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Cray-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\CrayClang-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Diab-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Embarcadero-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Fujitsu-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\GHS-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\HP-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\IAR-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Intel-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\MSVC-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\NVHPC-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\NVIDIA-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\OrangeC-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\PGI-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\PathScale-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Renesas-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\SCO-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\TI-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\TIClang-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Tasking-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Watcom-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\XL-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\CMakeCXXLinkerInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\CMakeCommonLinkerInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\CMakeDetermineLinkerId.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\CMakeInspectCXXLinker.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\FeatureTesting.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Linker\LLD-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Linker\LLD.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Linker\MSVC.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Linker\Windows-LLD-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Linker\Windows-LLD.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Linker\Windows-MSVC.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Clang-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Clang.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Determine-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Initialize.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-MSVC.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\WindowsPaths.cmake C$:\Users\baisa\Vanguard\CMakeLists.txt C$:\Users\baisa\Vanguard\core\CMakeLists.txt C$:\Users\baisa\Vanguard\storage\CMakeLists.txt C$:\Users\baisa\Vanguard\transport\CMakeLists.txt C$:\Users\baisa\Vanguard\ui\CMakeLists.txt CMakeCache.txt CMakeFiles\4.2.3\CMakeCXXCompiler.cmake CMakeFiles\4.2.3\CMakeRCCompiler.cmake CMakeFiles\4.2.3\CMakeSystem.cmake
+build build.ninja C$:\Users\baisa\Vanguard\build\cmake_install.cmake C$:\Users\baisa\Vanguard\build\core\cmake_install.cmake C$:\Users\baisa\Vanguard\build\net\cmake_install.cmake C$:\Users\baisa\Vanguard\build\storage\cmake_install.cmake C$:\Users\baisa\Vanguard\build\ui\cmake_install.cmake: RERUN_CMAKE | C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCXXInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCommonLanguageInclude.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeGenericSystem.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeInitializeConfigs.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeLanguageInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeRCInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeSystemSpecificInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeSystemSpecificInitialize.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\CMakeCommonCompilerMacros.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\CMakeCXXLinkerInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\CMakeCommonLinkerInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Linker\LLD-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Linker\LLD.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Linker\MSVC.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Linker\Windows-LLD-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Linker\Windows-LLD.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Linker\Windows-MSVC.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Clang-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Clang.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Initialize.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-MSVC.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\WindowsPaths.cmake C$:\Users\baisa\Vanguard\CMakeLists.txt C$:\Users\baisa\Vanguard\core\CMakeLists.txt C$:\Users\baisa\Vanguard\net\CMakeLists.txt C$:\Users\baisa\Vanguard\storage\CMakeLists.txt C$:\Users\baisa\Vanguard\ui\CMakeLists.txt CMakeCache.txt CMakeFiles\4.2.3\CMakeCXXCompiler.cmake CMakeFiles\4.2.3\CMakeRCCompiler.cmake CMakeFiles\4.2.3\CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCXXCompiler.cmake.in C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCXXCompilerABI.cpp C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCXXInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCommonLanguageInclude.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCompilerIdDetection.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineCXXCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineCompilerABI.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineCompilerId.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineCompilerSupport.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineRCCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeDetermineSystem.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeFindBinUtils.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeGenericSystem.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeInitializeConfigs.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeLanguageInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeNinjaFindMake.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeParseImplicitIncludeInfo.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeParseImplicitLinkInfo.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeParseLibraryArchitecture.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeRCCompiler.cmake.in C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeRCInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeSystem.cmake.in C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeSystemSpecificInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeSystemSpecificInitialize.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeTestCXXCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeTestCompilerCommon.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeTestRCCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\ADSP-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\ARMCC-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\ARMClang-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\AppleClang-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Borland-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\CMakeCommonCompilerMacros.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-CXX-CXXImportStd.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-CXX-FeatureTests.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-CXX-TestableFeatures.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-DetermineCompilerInternal.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-FindBinUtils.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Compaq-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Cray-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\CrayClang-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Diab-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Embarcadero-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Fujitsu-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\GHS-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\GNU-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\HP-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\IAR-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\IBMCPP-CXX-DetermineVersionInternal.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\IBMClang-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Intel-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\LCC-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\MSVC-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\NVHPC-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\NVIDIA-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\OrangeC-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\PGI-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\PathScale-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Renesas-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\SCO-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\SunPro-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\TI-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\TIClang-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Tasking-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\VisualAge-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Watcom-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\XL-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\XLClang-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\zOS-CXX-DetermineCompiler.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\CMakeCXXLinkerInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\CMakeCommonLinkerInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\CMakeDetermineLinkerId.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\CMakeInspectCXXLinker.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\FeatureTesting.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Linker\LLD-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Linker\LLD.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Linker\MSVC.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Linker\Windows-LLD-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Linker\Windows-LLD.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Linker\Windows-MSVC.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Clang-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Clang.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Determine-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Initialize.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-MSVC.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\WindowsPaths.cmake C$:\Users\baisa\Vanguard\CMakeLists.txt C$:\Users\baisa\Vanguard\core\CMakeLists.txt C$:\Users\baisa\Vanguard\storage\CMakeLists.txt C$:\Users\baisa\Vanguard\transport\CMakeLists.txt C$:\Users\baisa\Vanguard\ui\CMakeLists.txt CMakeCache.txt CMakeFiles\4.2.3\CMakeCXXCompiler.cmake CMakeFiles\4.2.3\CMakeRCCompiler.cmake CMakeFiles\4.2.3\CMakeSystem.cmake: phony
+build C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCXXInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeCommonLanguageInclude.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeGenericSystem.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeInitializeConfigs.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeLanguageInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeRCInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeSystemSpecificInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\CMakeSystemSpecificInitialize.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\CMakeCommonCompilerMacros.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Compiler\Clang.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\CMakeCXXLinkerInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Internal\CMakeCommonLinkerInformation.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Linker\LLD-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Linker\LLD.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Linker\MSVC.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Linker\Windows-LLD-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Linker\Windows-LLD.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Linker\Windows-MSVC.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Clang-CXX.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Clang.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-Initialize.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows-MSVC.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\Windows.cmake C$:\Program$ Files\CMake\share\cmake-4.2\Modules\Platform\WindowsPaths.cmake C$:\Users\baisa\Vanguard\CMakeLists.txt C$:\Users\baisa\Vanguard\core\CMakeLists.txt C$:\Users\baisa\Vanguard\net\CMakeLists.txt C$:\Users\baisa\Vanguard\storage\CMakeLists.txt C$:\Users\baisa\Vanguard\ui\CMakeLists.txt CMakeCache.txt CMakeFiles\4.2.3\CMakeCXXCompiler.cmake CMakeFiles\4.2.3\CMakeRCCompiler.cmake CMakeFiles\4.2.3\CMakeSystem.cmake: phony
 
 
 #############################################

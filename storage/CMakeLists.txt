@@ -1,9 +1,5 @@
-add_library(storage
-    messages.cpp
-)
+add_library(storage message.cpp)
 
-target_include_directories(storage PUBLIC
-    ${CMAKE_SOURCE_DIR}
-)
-
+target_include_directories(storage PUBLIC ${CMAKE_SOURCE_DIR})
 target_compile_options(storage PRIVATE /EHsc)
+target_link_libraries(storage PUBLIC core)

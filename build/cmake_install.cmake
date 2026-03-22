@@ -39,12 +39,12 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/baisa/Vanguard/build/storage/cmake_install.cmake")
+  include("C:/Users/baisa/Vanguard/build/net/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("C:/Users/baisa/Vanguard/build/transport/cmake_install.cmake")
+  include("C:/Users/baisa/Vanguard/build/storage/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)

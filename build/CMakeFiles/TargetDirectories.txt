@@ -4,12 +4,12 @@ C:/Users/baisa/Vanguard/build/CMakeFiles/rebuild_cache.dir
 C:/Users/baisa/Vanguard/build/core/CMakeFiles/core.dir
 C:/Users/baisa/Vanguard/build/core/CMakeFiles/edit_cache.dir
 C:/Users/baisa/Vanguard/build/core/CMakeFiles/rebuild_cache.dir
+C:/Users/baisa/Vanguard/build/net/CMakeFiles/net.dir
+C:/Users/baisa/Vanguard/build/net/CMakeFiles/edit_cache.dir
+C:/Users/baisa/Vanguard/build/net/CMakeFiles/rebuild_cache.dir
 C:/Users/baisa/Vanguard/build/storage/CMakeFiles/storage.dir
 C:/Users/baisa/Vanguard/build/storage/CMakeFiles/edit_cache.dir
 C:/Users/baisa/Vanguard/build/storage/CMakeFiles/rebuild_cache.dir
-C:/Users/baisa/Vanguard/build/transport/CMakeFiles/transport.dir
-C:/Users/baisa/Vanguard/build/transport/CMakeFiles/edit_cache.dir
-C:/Users/baisa/Vanguard/build/transport/CMakeFiles/rebuild_cache.dir
 C:/Users/baisa/Vanguard/build/ui/CMakeFiles/ui.dir
 C:/Users/baisa/Vanguard/build/ui/CMakeFiles/edit_cache.dir
 C:/Users/baisa/Vanguard/build/ui/CMakeFiles/rebuild_cache.dir
