@@ -1,10 +1,12 @@
 #pragma once
 #include <mutex>
 #include <queue>
+#include <vector>
 #include "core/identity.hpp"
 #include "storage/messages.hpp"
 #include "transport/peer.hpp"
 
+// Поток-безопасная очередь входящих сообщений
 struct IncomingQueue {
     std::mutex mtx;
     std::queue<vanguard::transport::RawMessage> messages;

@@ -3,10 +3,7 @@ project(Vanguard VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 set(CMAKE_AR "C:/Program Files/LLVM/bin/llvm-lib.exe")
-
-# Статическая линковка - не нужен VC++ redistributable
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 
 add_subdirectory(core)
@@ -14,13 +11,13 @@ add_subdirectory(storage)
 add_subdirectory(transport)
 add_subdirectory(ui)
 
-add_executable(vanguard WIN32 main.cpp
+add_executable(vanguard main.cpp
     libs/imgui/imgui.cpp
     libs/imgui/imgui_draw.cpp
     libs/imgui/imgui_tables.cpp
     libs/imgui/imgui_widgets.cpp
-    libs/imgui/backends/imgui_impl_win32.cpp
-    libs/imgui/backends/imgui_impl_dx11.cpp
+    libs/imgui/backends/imgui_impl_sdl3.cpp
+    libs/imgui/backends/imgui_impl_sdlrenderer3.cpp
 )
 
 target_link_libraries(vanguard PRIVATE ui core storage transport)

@@ -1,15 +1,14 @@
-#include <windows.h>
-#include <thread>
+#include <SDL3/SDL_main.h>
 #include <string>
 #include "core/identity.hpp"
 #include "storage/messages.hpp"
 #include "transport/peer.hpp"
 #include "ui/window.hpp"
 
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR lpCmdLine, int) {
-    uint16_t port = 443;
-    if (lpCmdLine && lpCmdLine[0]) {
-        try { port = (uint16_t)std::stoi(lpCmdLine); }
+int main(int argc, char* argv[]) {
+    uint16_t port = 8080;
+    if (argc > 1) {
+        try { port = (uint16_t)std::stoi(argv[1]); }
         catch (...) {}
     }
 
@@ -31,13 +30,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR lpCmdLine, int) {
     vanguard::transport::PeerTransport transport(port);
 
     transport.on_message([&](vanguard::transport::RawMessage msg) {
-        queue.push(std::move(msg));
+        try { queue.push(std::move(msg)); } catch (...) {}
     });
 
     transport.run();
-
     vanguard::ui::run_window(identity, store, transport, queue);
-
     transport.stop();
     return 0;
 }

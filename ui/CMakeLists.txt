@@ -5,6 +5,7 @@ add_library(ui
 target_include_directories(ui PUBLIC
     ${CMAKE_SOURCE_DIR}/libs/imgui
     ${CMAKE_SOURCE_DIR}/libs/imgui/backends
+    ${CMAKE_SOURCE_DIR}/libs/SDL3-3.2.10/include
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/ui
 )
@@ -15,7 +16,5 @@ target_compile_options(ui PRIVATE /EHsc)
 target_link_libraries(ui PUBLIC
     core
     storage
-    d3d11
-    dxgi
-    d3dcompiler
+    ${CMAKE_SOURCE_DIR}/libs/SDL3-3.2.10/lib/x64/SDL3.lib
 )

@@ -1,71 +1,21 @@
 #include "window.hpp"
 #include "imgui.h"
-#include "backends/imgui_impl_win32.h"
-#include "backends/imgui_impl_dx11.h"
-#include <d3d11.h>
-#include <dxgi.h>
+#include "backends/imgui_impl_sdl3.h"
+#include "backends/imgui_impl_sdlrenderer3.h"
+#include <SDL3/SDL.h>
 #include <string>
 #include <vector>
 #include <ctime>
 #include <filesystem>
+#include <fstream>
+#include <algorithm>
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
+static void ui_log(const std::string& msg) {
+    std::ofstream f("vanguard_log.txt", std::ios::app);
+    f << "[UI] " << msg << "\n";
+}
 
 namespace vanguard::ui {
-
-static ID3D11Device*            g_pd3dDevice = nullptr;
-static ID3D11DeviceContext*     g_pd3dContext = nullptr;
-static IDXGISwapChain*          g_pSwapChain = nullptr;
-static ID3D11RenderTargetView*  g_mainRTV = nullptr;
-static HWND                     g_hwnd = nullptr;
-
-static void CreateRenderTarget() {
-    ID3D11Texture2D* back = nullptr;
-    g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&back));
-    g_pd3dDevice->CreateRenderTargetView(back, nullptr, &g_mainRTV);
-    back->Release();
-}
-
-static void CleanupRenderTarget() {
-    if (g_mainRTV) { g_mainRTV->Release(); g_mainRTV = nullptr; }
-}
-
-static bool InitD3D(HWND hwnd) {
-    DXGI_SWAP_CHAIN_DESC sd = {};
-    sd.BufferCount = 2;
-    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    sd.OutputWindow = hwnd;
-    sd.SampleDesc.Count = 1;
-    sd.Windowed = TRUE;
-    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-
-    D3D_FEATURE_LEVEL fl;
-    if (D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
-        0, nullptr, 0, D3D11_SDK_VERSION, &sd, &g_pSwapChain,
-        &g_pd3dDevice, &fl, &g_pd3dContext) != S_OK)
-        return false;
-
-    CreateRenderTarget();
-    return true;
-}
-
-static LRESULT WINAPI WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
-    if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wp, lp)) return true;
-    switch (msg) {
-        case WM_SIZE:
-            if (g_pd3dDevice && wp != SIZE_MINIMIZED) {
-                CleanupRenderTarget();
-                g_pSwapChain->ResizeBuffers(0, LOWORD(lp), HIWORD(lp), DXGI_FORMAT_UNKNOWN, 0);
-                CreateRenderTarget();
-            }
-            return 0;
-        case WM_DESTROY:
-            PostQuitMessage(0);
-            return 0;
-    }
-    return DefWindowProcW(hwnd, msg, wp, lp);
-}
 
 static std::string format_time(std::time_t t) {
     char buf[32];
@@ -76,183 +26,241 @@ static std::string format_time(std::time_t t) {
 }
 
 static std::string find_font(const std::string& name) {
-    std::filesystem::path exe_dir = std::filesystem::current_path();
-    std::filesystem::path font = exe_dir / "assets" / "fonts" / name;
+    std::filesystem::path font = std::filesystem::current_path() / "assets" / "fonts" / name;
     if (std::filesystem::exists(font)) return font.string();
     return "";
 }
 
+static void apply_style() {
+    ImGuiStyle& s = ImGui::GetStyle();
+    s.WindowRounding  = 8.0f;
+    s.FrameRounding   = 6.0f;
+    s.WindowBorderSize = 0.0f;
+    s.FramePadding    = {10, 6};
+    s.ItemSpacing     = {8, 6};
+    s.ScrollbarSize   = 8.0f;
+
+    ImVec4* c = s.Colors;
+    c[ImGuiCol_WindowBg]      = {0.09f, 0.10f, 0.12f, 1.0f};
+    c[ImGuiCol_ChildBg]       = {0.07f, 0.08f, 0.10f, 1.0f};
+    c[ImGuiCol_Header]        = {0.17f, 0.35f, 0.55f, 0.8f};
+    c[ImGuiCol_HeaderHovered] = {0.20f, 0.40f, 0.65f, 1.0f};
+    c[ImGuiCol_Button]        = {0.17f, 0.35f, 0.55f, 1.0f};
+    c[ImGuiCol_ButtonHovered] = {0.20f, 0.45f, 0.70f, 1.0f};
+    c[ImGuiCol_FrameBg]       = {0.13f, 0.14f, 0.17f, 1.0f};
+    c[ImGuiCol_Separator]     = {0.20f, 0.22f, 0.27f, 1.0f};
+    c[ImGuiCol_Text]          = {0.90f, 0.92f, 0.95f, 1.0f};
+    c[ImGuiCol_TextDisabled]  = {0.45f, 0.48f, 0.55f, 1.0f};
+}
+
 void run_window(vanguard::Identity& identity, vanguard::MessageStore& store,
                 vanguard::transport::PeerTransport& transport, IncomingQueue& queue) {
-    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0, 0,
-        GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr,
-        L"Vanguard", nullptr };
-    RegisterClassExW(&wc);
 
-    g_hwnd = CreateWindowW(L"Vanguard", L"Vanguard",
-        WS_OVERLAPPEDWINDOW, 100, 100, 900, 600,
-        nullptr, nullptr, wc.hInstance, nullptr);
+    if (!SDL_Init(SDL_INIT_VIDEO)) return;
 
-    if (!InitD3D(g_hwnd)) return;
+    SDL_Window* window = SDL_CreateWindow("Vanguard", 960, 640,
+        SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY);
+    if (!window) { SDL_Quit(); return; }
 
-    ShowWindow(g_hwnd, SW_SHOWDEFAULT);
-    UpdateWindow(g_hwnd);
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr);
+    if (!renderer) { SDL_DestroyWindow(window); SDL_Quit(); return; }
+
+    ui_log("SDL3 initialized");
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    ImGui::StyleColorsDark();
+    apply_style();
 
-    static const ImWchar noto_ranges[] = {
-        0x0020, 0x00FF,
-        0x0400, 0x04FF,
-        0,
-    };
+    static const ImWchar noto_ranges[] = { 0x0020, 0x00FF, 0x0400, 0x04FF, 0 };
     ImFontConfig font_cfg;
     font_cfg.OversampleH = 2;
     font_cfg.OversampleV = 2;
-
     std::string noto_path = find_font("NotoSans-Regular.ttf");
-    if (!noto_path.empty())
-        io.Fonts->AddFontFromFileTTF(noto_path.c_str(), 16.0f, &font_cfg, noto_ranges);
+    if (!noto_path.empty()) {
+        io.Fonts->AddFontFromFileTTF(noto_path.c_str(), 15.0f, &font_cfg, noto_ranges);
+        ui_log("NotoSans loaded");
+    }
 
-    static const ImWchar emoji_ranges[] = { 0x2300, 0x27BF, 0 };
-    ImFontConfig emoji_cfg;
-    emoji_cfg.MergeMode = true;
-    emoji_cfg.OversampleH = 1;
-    emoji_cfg.OversampleV = 1;
-    std::string emoji_path = find_font("NotoEmoji-Regular.ttf");
-    if (!emoji_path.empty())
-        io.Fonts->AddFontFromFileTTF(emoji_path.c_str(), 16.0f, &emoji_cfg, emoji_ranges);
-
-    ImGui_ImplWin32_Init(g_hwnd);
-    ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dContext);
+    ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
+    ImGui_ImplSDLRenderer3_Init(renderer);
+    ui_log("ImGui SDL3 initialized");
 
     struct Peer { std::string host; uint16_t port; };
     std::vector<Peer> peers;
     char peer_input[128] = {};
     char input_buf[512] = {};
-    bool scroll_to_bottom = true;
     int selected_peer = -1;
+    bool running = true;
+    std::vector<vanguard::Message> local_msgs;
+    try { local_msgs = store.messages(); } catch (...) { ui_log("msgs copy failed"); }
+    bool msgs_dirty = false;
 
-    MSG msg = {};
-    while (msg.message != WM_QUIT) {
-        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-            continue;
+    while (running) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            ImGui_ImplSDL3_ProcessEvent(&event);
+            if (event.type == SDL_EVENT_QUIT) running = false;
+            if (event.type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) running = false;
         }
 
-        vanguard::transport::RawMessage incoming;
-        while (queue.pop(incoming)) {
-            store.add(incoming.payload, incoming.sender_id);
-            scroll_to_bottom = true;
-        }
-
-        ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
-
-        ImGui::SetNextWindowPos({0, 0});
-        ImGui::SetNextWindowSize({220, io.DisplaySize.y});
-        ImGui::Begin("##peers", nullptr,
-            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
-
-        ImGui::TextColored({0.4f, 0.8f, 1.0f, 1.0f}, "Vanguard");
-        ImGui::TextDisabled("%.8s...", identity.id().c_str());
-        ImGui::Separator();
-
-        if (ImGui::Selectable("Saved Messages", selected_peer == -1))
-            selected_peer = -1;
-
-        ImGui::Separator();
-        ImGui::TextDisabled("Peers:");
-
-        for (int i = 0; i < (int)peers.size(); i++) {
-            std::string label = peers[i].host + ":" + std::to_string(peers[i].port);
-            if (ImGui::Selectable(label.c_str(), selected_peer == i)) {
-                selected_peer = i;
-                scroll_to_bottom = true;
+        // Сцепление - забираем новые сообщения ДО кадра
+        {
+            vanguard::transport::RawMessage incoming;
+            while (queue.pop(incoming)) {
+                store.add(incoming.payload, incoming.sender_id);
+                msgs_dirty = true;
+                ui_log("Received: " + incoming.payload);
+            }
+            if (msgs_dirty) {
+                std::vector<vanguard::Message> local_msgs;
+                try { local_msgs = store.messages(); } catch (...) { ui_log("msgs copy failed"); }
+                msgs_dirty = false;
             }
         }
 
+        ImGui_ImplSDLRenderer3_NewFrame();
+        ImGui_ImplSDL3_NewFrame();
+        ImGui::NewFrame();
+
+        int w, h;
+        SDL_GetWindowSize(window, &w, &h);
+        float sw = 220.0f;
+
+        // Левая панель
+        ImGui::SetNextWindowPos({0, 0});
+        ImGui::SetNextWindowSize({sw, (float)h});
+        ImGui::Begin("##sidebar", nullptr,
+            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar);
+
+        ImGui::Spacing();
+        ImGui::TextColored({0.40f, 0.75f, 1.0f, 1.0f}, "  Vanguard");
+        ImGui::TextDisabled("  %.8s...", identity.id().c_str());
+        ImGui::Spacing();
         ImGui::Separator();
-        ImGui::SetNextItemWidth(140);
-        ImGui::InputText("##peer_input", peer_input, sizeof(peer_input));
+        ImGui::Spacing();
+
+        if (ImGui::Selectable("  Saved Messages", selected_peer == -1, 0, {0, 28}))
+            selected_peer = -1;
+
+        ImGui::Spacing();
+        ImGui::TextDisabled("  Peers");
+        ImGui::Spacing();
+
+        for (int i = 0; i < (int)peers.size(); i++) {
+            std::string label = "  " + peers[i].host + ":" + std::to_string(peers[i].port);
+            if (ImGui::Selectable(label.c_str(), selected_peer == i, 0, {0, 28})) {
+                selected_peer = i;
+                std::vector<vanguard::Message> local_msgs;
+                try { local_msgs = store.messages(); } catch (...) { ui_log("msgs copy failed"); }
+            }
+        }
+
+        // Поле добавления пира внизу
+        ImGui::SetCursorPosY((float)h - 48);
+        ImGui::Separator();
+        ImGui::Spacing();
+        ImGui::SetNextItemWidth(sw - 48);
+        ImGui::InputText("##pi", peer_input, sizeof(peer_input));
         ImGui::SameLine();
-        if (ImGui::Button("+") && peer_input[0]) {
-              std::string s(peer_input);
+        if (ImGui::Button("+", {28, 0}) && peer_input[0]) {
+            std::string s(peer_input);
             auto sep = s.find(':');
             if (sep != std::string::npos && sep > 0) {
-                peers.push_back({s.substr(0, sep), (uint16_t)std::stoi(s.substr(sep + 1))});
+                try { peers.push_back({s.substr(0, sep), (uint16_t)std::stoi(s.substr(sep+1))}); }
+                catch (...) {}
                 peer_input[0] = '\0';
             }
         }
-        
         ImGui::End();
 
-        ImGui::SetNextWindowPos({220, 0});
-        ImGui::SetNextWindowSize({io.DisplaySize.x - 220, io.DisplaySize.y});
+        // Правая панель - чат
+        ImGui::SetNextWindowPos({sw, 0});
+        ImGui::SetNextWindowSize({(float)w - sw, (float)h});
         ImGui::Begin("##chat", nullptr,
             ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 
+        ImGui::Spacing();
         if (selected_peer == -1)
-            ImGui::TextColored({0.4f, 0.8f, 1.0f, 1.0f}, "Saved Messages");
+            ImGui::TextColored({0.40f, 0.75f, 1.0f, 1.0f}, "Saved Messages");
         else
-            ImGui::TextColored({0.4f, 0.8f, 1.0f, 1.0f}, "%s:%d",
+            ImGui::TextColored({0.40f, 0.75f, 1.0f, 1.0f}, "%s:%d",
                 peers[selected_peer].host.c_str(), peers[selected_peer].port);
-
+        ImGui::Spacing();
         ImGui::Separator();
 
-        ImGui::BeginChild("##messages", {0, -45.0f}, false);
-        for (const auto& m : store.messages()) {
-            ImGui::TextDisabled("[%s]", format_time(m.timestamp).c_str());
-            ImGui::SameLine();
-            ImGui::TextWrapped("%s", m.text.c_str());
+        // Область сообщений - простая без BeginChild пузырей
+        ImGui::BeginChild("##msgs", {0, -52.0f}, false);
+
+        for (const auto& m : local_msgs) {
+            if (m.text.empty()) continue;
+            bool is_mine = (m.sender_id == identity.id());
+            std::string t = format_time(m.timestamp);
+
+            if (is_mine) {
+                ImGui::TextDisabled("%s", t.c_str());
+                ImGui::SameLine();
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{0.6f, 0.85f, 1.0f, 1.0f});
+                ImGui::TextUnformatted(m.text.c_str());
+                ImGui::PopStyleColor();
+            } else {
+                ImGui::TextDisabled("%s", t.c_str());
+                ImGui::SameLine();
+                ImGui::TextUnformatted(m.text.c_str());
+            }
         }
-        if (scroll_to_bottom) { ImGui::SetScrollHereY(1.0f); scroll_to_bottom = false; }
+
+        // Автоскролл вниз
+        if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 20)
+            ImGui::SetScrollHereY(1.0f);
+
         ImGui::EndChild();
         ImGui::Separator();
 
-        ImGui::SetNextItemWidth(-70);
+        // Поле ввода
+        ImGui::Spacing();
+        ImGui::SetNextItemWidth((float)w - sw - 88);
         bool enter = ImGui::InputText("##input", input_buf, sizeof(input_buf),
             ImGuiInputTextFlags_EnterReturnsTrue);
         ImGui::SameLine();
 
-        if ((ImGui::Button("Send", {60, 0}) || enter) && input_buf[0]) {
+        if ((ImGui::Button("Send", {70, 0}) || enter) && input_buf[0]) {
             std::string text(input_buf);
-            if (selected_peer == -1) {
-                store.add(text, identity.id());
-            } else {
-                transport.send({peers[selected_peer].host, peers[selected_peer].port},
-                               {identity.id(), text});
-                store.add(text, identity.id());
+            try {
+                if (selected_peer == -1) {
+                    store.add(text, identity.id());
+                } else {
+                    transport.send({peers[selected_peer].host, peers[selected_peer].port},
+                                   {identity.id(), text});
+                    store.add(text, identity.id());
+                }
+                std::vector<vanguard::Message> local_msgs;
+                try { local_msgs = store.messages(); } catch (...) { ui_log("msgs copy failed"); }
+                ui_log("Sent: " + text);
+            } catch (...) {
+                ui_log("Send failed");
             }
             input_buf[0] = '\0';
-            scroll_to_bottom = true;
             ImGui::SetKeyboardFocusHere(-1);
         }
         ImGui::End();
 
-        ImVec4 clear = {0.08f, 0.08f, 0.08f, 1.0f};
-        g_pd3dContext->ClearRenderTargetView(g_mainRTV, (float*)&clear);
-        g_pd3dContext->OMSetRenderTargets(1, &g_mainRTV, nullptr);
         ImGui::Render();
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-        g_pSwapChain->Present(1, 0);
+        SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
+        SDL_RenderClear(renderer);
+        ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
+        SDL_RenderPresent(renderer);
     }
 
     store.save();
-    ImGui_ImplDX11_Shutdown();
-    ImGui_ImplWin32_Shutdown();
+    ImGui_ImplSDLRenderer3_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
     ImGui::DestroyContext();
-    CleanupRenderTarget();
-    if (g_pSwapChain) g_pSwapChain->Release();
-    if (g_pd3dContext) g_pd3dContext->Release();
-    if (g_pd3dDevice) g_pd3dDevice->Release();
-    DestroyWindow(g_hwnd);
-    UnregisterClassW(L"Vanguard", wc.hInstance);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }
 
 } // namespace vanguard::ui

@@ -5,35 +5,25 @@
 
 namespace vanguard::transport {
 
-// Адрес ноды в сети
 struct PeerAddress {
-    std::string host; // IP или hostname
-    uint16_t port;    // Порт
+    std::string host;
+    uint16_t port;
 };
 
-// Входящее сообщение от другой ноды
 struct RawMessage {
-    std::string sender_id;  // ID отправителя
-    std::string payload;    // Данные
+    std::string sender_id;
+    std::string payload;
 };
 
-// Транспортный слой - отправляет и принимает сообщения
 class PeerTransport {
 public:
-    // Запустить на указанном порту
     explicit PeerTransport(uint16_t port);
     ~PeerTransport();
 
-    // Отправить сообщение другой ноде
     void send(const PeerAddress& to, const RawMessage& msg);
-
-    // Callback когда пришло сообщение
     void on_message(std::function<void(RawMessage)> callback);
-
-    // Запустить приём (блокирующий)
+    void raw_send(const std::string& host, uint16_t port, const std::string& data);
     void run();
-
-    // Остановить
     void stop();
 
 private:

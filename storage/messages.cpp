@@ -16,7 +16,7 @@ void MessageStore::add(const std::string& text, const std::string& sender_id) {
     messages_.push_back(msg);
 }
 
-const std::vector<Message>& MessageStore::messages() const {
+std::vector<Message> MessageStore::messages() const {
     return messages_;
 }
 

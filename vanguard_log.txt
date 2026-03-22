@@ -1,0 +1,8 @@
+Transport started on port 8080
+[UI] SDL3 initialized
+[UI] NotoSans loaded
+[UI] ImGui SDL3 initialized
+[UI] Sent: e
+[UI] Sent: у
+[UI] Sent: e
+[UI] Sent: eee

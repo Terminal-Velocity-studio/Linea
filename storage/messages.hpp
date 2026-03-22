@@ -21,8 +21,11 @@ public:
     // Добавить сообщение
     void add(const std::string& text, const std::string& sender_id);
 
+    // В MessageStore добавим:
+    std::vector<Message> swap_buffer(); // забирает новые сообщения атомарно
+
     // Получить все сообщения
-    const std::vector<Message>& messages() const;
+    std::vector<Message> messages() const;
 
     // Сохранить на диск
     void save() const;
