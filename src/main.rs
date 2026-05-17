@@ -5,10 +5,92 @@ use aes_gcm::aead::rand_core::RngCore;
 use serde_json::json;
 use std::time::{SystemTime, UNIX_EPOCH};
 use chrono::{DateTime, Utc};
+use chrono::Timelike;
+use std::sync::{Arc, Mutex};
+use rand::RngExt;
+
+fn greeting(name: &str, friendly: bool) -> String {
+    let hour = chrono::Local::now().hour();
+    let msg = match (hour, friendly) {
+        (5..=8, false)  => "Good Morning,",
+        (5..=8, true)   => "Rise and shine,",
+        (12..=13, false) => "Good Afternoon,",
+        (12..=13, true)  => "Lunch time,",
+        (17..=18, false) => "Good Evening,",
+        (17..=18, true)  => "Tea & Chatting,",
+        (22..=23, _)     => "Late night chats,",
+        (0..=4, _)       => "3AM Chats,",
+        _                => "Hello,",
+    };
+    format!("{} {}", msg, name)
+}
+
+const NATO: &[&str] = &[
+    "Alpha", "Bravo", "Charlie", "Delta", "Echo",
+    "Foxtrot", "Golf", "Hotel", "India", "Juliet",
+    "Kilo", "Lima", "Mike", "November", "Oscar",
+    "Papa", "Quebec", "Romeo", "Sierra", "Tango",
+    "Uniform", "Victor", "Whiskey", "Xenon", "Yankee", "Zulu"
+];
+
+enum AppView {
+    Chat,
+    ShareAccount,
+    Settings,
+}
 
 fn main() {
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    let (tx, rx) = std::sync::mpsc::channel::<String>();
+
+    let ctx_holder: Arc<Mutex<Option<egui::Context>>> = Arc::new(Mutex::new(None));
+    let ctx_holder_clone = ctx_holder.clone();
+
+    let handle = rt.handle().clone();
+
+    rt.spawn(async move {
+        // ждём пока ctx появится
+        loop {
+            let ctx = ctx_holder_clone.lock().unwrap().clone();
+            if let Some(ctx) = ctx {
+                start_listener(1234, tx, ctx).await;
+                break;
+            }
+            tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+        }
+    });
+
     let native_options = eframe::NativeOptions::default();
-    eframe::run_native("Linea", native_options, Box::new(|cc| Ok(Box::new(Linea::new(cc)))));
+    let _ = eframe::run_native("Linea", native_options,
+                               Box::new(move |cc| {
+                                   *ctx_holder.lock().unwrap() = Some(cc.egui_ctx.clone());
+                                   Ok(Box::new(Linea::new(cc, rx, handle)))
+                               }));
+}
+
+
+fn random_data_port() -> u16 {
+    use rand::Rng;
+    rand::rng().random_range(1024u16..=9999u16)
+}
+async fn start_listener(port: u16, tx: std::sync::mpsc::Sender<String>, ctx: egui::Context) {
+    let socket = tokio::net::UdpSocket::bind(format!("0.0.0.0:{}", port))
+        .await
+        .unwrap();
+
+    let mut buf = [0u8; 65535];
+    loop {
+        let (len, _addr) = socket.recv_from(&mut buf).await.unwrap();
+        let text = String::from_utf8_lossy(&buf[..len]).to_string();
+        tx.send(text).ok();
+        ctx.request_repaint(); // будим egui
+    }
+}
+
+async fn send_udp(target: &str, data: &[u8]) {
+    if let Ok(socket) = tokio::net::UdpSocket::bind("0.0.0.0:0").await {
+        socket.send_to(data, target).await.ok();
+    }
 }
 
 #[derive(Default)]
@@ -16,9 +98,23 @@ struct Linea {
     input: String,
     messages: Vec<Message>,  // Not string because format
     people: Vec<Contact>,
+    show_menu: bool,
     selected_chat: usize,
     master_key: [u8; 32],
     right_panel: RightPanel,
+    network_rx: Option<std::sync::mpsc::Receiver<String>>,
+    rt: Option<tokio::runtime::Handle>,
+    my_token: Option<String>,
+    token_expires: Option<u64>, // Unix timestamp when it expires
+}
+
+fn generate_token() -> String {
+    use rand::Rng;
+    let mut rng = rand::rng();
+    let a = NATO[rng.random_range(0..26)];
+    let b = NATO[rng.random_range(0..26)];
+    let c = NATO[rng.random_range(0..26)];
+    format!("{} {} {}", a, b, c)
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -34,7 +130,7 @@ struct Contact {
     media_cache_days: u32,  // to prevent your filesystem to go chunky
 }
 
-#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
 struct Message {
     sender: String,    // who said that
     text: String,      // what it said
@@ -148,7 +244,7 @@ fn short_id(pubkey: &[u8]) -> String {
 }
 
 impl Linea {
-    fn new(cc: &eframe::CreationContext<'_>) -> Self {
+    fn new(cc: &eframe::CreationContext<'_>, rx: std::sync::mpsc::Receiver<String>, rt: tokio::runtime::Handle) -> Self {
         std::fs::create_dir_all("contacts").ok();
         std::fs::create_dir_all("media/pfp").ok();
         std::fs::create_dir_all("msg").ok();
@@ -191,6 +287,10 @@ impl Linea {
         ];
         save_messages(&test_msgs, "test", &test_key).ok();
 
+        let mut app = Self::default();
+
+        app.rt = Some(rt);
+        app.network_rx = Some(rx);
         app.people = contacts;
         app
     }
@@ -210,8 +310,26 @@ impl Linea {
 
 impl eframe::App for Linea {
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
+        if let Some(rx) = &self.network_rx {
+            while let Ok(msg) = rx.try_recv() {
+                self.messages.push(Message {
+                    sender: "unknown".to_string(),
+                    text: msg,
+                    timestamp: SystemTime::now()
+                        .duration_since(UNIX_EPOCH)
+                        .unwrap()
+                        .as_secs()
+                        .to_string(),
+                });
+            }
+        }
             egui::SidePanel::left("chats_panel").show(ui.ctx(), |ui| {
-                ui.heading("Chats");
+                ui.horizontal(|ui| {
+                    if ui.button("☰").clicked() {
+                        self.show_menu = !self.show_menu;
+                    }
+                    ui.label(greeting("ffrxst", true)); // потом из настроек
+                });
                 ui.separator();
                 ui.add_space(10.0);
                 self.reload_contacts();
@@ -261,6 +379,26 @@ impl eframe::App for Linea {
                 }
             });
 
+        if self.show_menu {
+            egui::Window::new("##menu")
+                .fixed_pos([4.5, 35.0]) // под хедером
+                .fixed_size([280.0, ui.ctx().screen_rect().height()])
+                .title_bar(false)
+                .show(ui.ctx(), |ui| {
+                    // pfp + имя
+                    ui.horizontal(|ui| {
+                        ui.label("👤"); // потом реальный pfp
+                        ui.vertical(|ui| {
+                            ui.label("ffrxst");
+                            ui.label("Online");
+                        });
+                    });
+                    ui.separator();
+                    ui.label("⚙ Настройки");
+                    ui.label("🔗 Поделиться");
+                });
+        }
+
         egui::SidePanel::right("contact_card").show(ui.ctx(), |ui| {
             if self.selected_chat < self.people.len() {
                 let contact = &self.people[self.selected_chat];
@@ -283,15 +421,34 @@ impl eframe::App for Linea {
                         || ui.input(|i| i.key_pressed(egui::Key::Enter));
 
                     if send && !self.input.trim().is_empty() {
-                        self.messages.push(Message {
+                        let msg = Message {
                             sender: "me".to_string(),
                             text: self.input.clone(),
-                            timestamp: "2026-05-17".to_string(), // потом chrono добавим
-                        });
+                            timestamp: SystemTime::now()
+                                .duration_since(UNIX_EPOCH)
+                                .unwrap()
+                                .as_secs()
+                                .to_string(),
+                        };
+                        self.messages.push(msg.clone());
                         self.input.clear();
+
+                        if self.selected_chat < self.people.len() {
+                            let contact = &self.people[self.selected_chat];
+                            let target = format!("{}:{}", contact.last_seen_ip, contact.data_port);
+                            let data = serde_json::to_vec(&msg).unwrap_or_default();
+
+                            if let Some(rt) = &self.rt {
+                                rt.spawn(async move {
+                                    send_udp(&target, &data).await;
+                                });
+                            }
+                        }
+
+                        // сохраняем
                         if self.selected_chat < self.people.len() {
                             let name = self.people[self.selected_chat].name.clone();
-                            save_messages(&self.messages, &name, &self.master_key).ok(); // saving
+                            save_messages(&self.messages, &name, &self.master_key).ok();
                         }
                     }
                 });
@@ -324,7 +481,7 @@ impl eframe::App for Linea {
                                                 ui.label(if is_me { "Me" } else { &msg.sender });
                                                 ui.label(&msg.text);
                                                 ui.with_layout(egui::Layout::right_to_left(egui::Align::TOP), |ui| {
-                                                    ui.label(&msg.timestamp);
+                                                    ui.label(format_timestamp(&msg.timestamp));
                                                 });
                                             });
                                         });
