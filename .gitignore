@@ -5,5 +5,9 @@
 contacts/
 media/
 msg/
+*.bin
+# The .bin because your encrypted compressed chats are .bin
+*.key
+# I think the word "key" says it all
 
 .idea
