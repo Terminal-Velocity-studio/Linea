@@ -1,0 +1,9 @@
+/target
+
+
+# Linea files and personal stuff so it doesn't get sent somewhere to china
+contacts/
+media/
+msg/
+
+.idea
