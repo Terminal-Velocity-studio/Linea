@@ -1,23 +1,28 @@
-use eframe::egui;
+use eframe::egui; // GUI
 use aes_gcm::{Aes256Gcm, Key, Nonce};
 use aes_gcm::aead::{Aead, KeyInit, OsRng};
-use aes_gcm::aead::rand_core::RngCore;
-use serde_json::json;
+use aes_gcm::aead::rand_core::RngCore; // Encryption
+use serde_json::json;       // Used for saving people (contacts)
 use std::time::{SystemTime, UNIX_EPOCH};
 use chrono::{DateTime, Utc};
-use chrono::Timelike;
+use chrono::Timelike; // Timestamps
 use std::sync::{Arc, Mutex};
-use rand::RngExt;
+use rand::RngExt; // Tokens and such
+// All-inclusive
 
+// STYLE marks "You can edit this to style it as you'd like", basically colors usually.
+// If you fork this, mention the author (ffrxst) 
+
+// The cool greetings, QOL convenience and so on, also tells you the part of the day I guess
 fn greeting(name: &str, friendly: bool) -> String {
     let hour = chrono::Local::now().hour();
     let msg = match (hour, friendly) {
         (5..=8, false)  => "Good Morning,",
         (5..=8, true)   => "Rise and shine,",
         (12..=13, false) => "Good Afternoon,",
-        (12..=13, true)  => "Lunch time,",
-        (17..=18, false) => "Good Evening,",
-        (17..=18, true)  => "Tea & Chatting,",
+        (12..=14, true)  => "Lunch time,",
+        (17..=20, false) => "Good Evening,",
+        (17..=19, true)  => "Tea & Chatting,",
         (22..=23, _)     => "Late night chats,",
         (0..=4, _)       => "3AM Chats,",
         _                => "Hello,",
@@ -25,18 +30,23 @@ fn greeting(name: &str, friendly: bool) -> String {
     format!("{} {}", msg, name)
 }
 
-const NATO: &[&str] = &[
-    "Alpha", "Bravo", "Charlie", "Delta", "Echo",
+// Token nomenclature
+const NATO: &[&str] = &[    // NATO Phonetic alphabet, convenient. You can't mistake "Yankee" for "Bravo", used in tokens. X-ray for X swapped for Xenon because of the "-" dash
+    "Alpha", "Bravo", "Charlie", "Delta", "Echo",           // And for overall reading convenience as it is two words fitted in one.
     "Foxtrot", "Golf", "Hotel", "India", "Juliet",
     "Kilo", "Lima", "Mike", "November", "Oscar",
     "Papa", "Quebec", "Romeo", "Sierra", "Tango",
     "Uniform", "Victor", "Whiskey", "Xenon", "Yankee", "Zulu"
 ];
 
+// AppView is for focusing, overlays and such stuff, enum so that only one can be chosen, perfect.
+#[derive(Default, PartialEq)]
 enum AppView {
-    Chat,
-    ShareAccount,
-    Settings,
+    #[default]
+    Chat,       // Well, the chat.
+    Settings,   // settings overlay, just so it closes whenever you point anything out of it
+    Sharing,    // QR codes, token and other methods
+    Media,      // pfp, media (pics videos and such)
 }
 
 fn main() {
@@ -97,34 +107,34 @@ async fn send_udp(target: &str, data: &[u8]) {
 struct Linea {
     input: String,
     messages: Vec<Message>,  // Not string because format
-    people: Vec<Contact>,
-    show_menu: bool,
-    selected_chat: usize,
-    master_key: [u8; 32],
-    right_panel: RightPanel,
-    network_rx: Option<std::sync::mpsc::Receiver<String>>,
-    rt: Option<tokio::runtime::Handle>,
-    my_token: Option<String>,
+    people: Vec<Contact>,   // people you know, the phone book basically
+    show_menu: bool,        // is the menu shown?
+    selected_chat: usize,   // what chat did you choose in the people menu
+    master_key: [u8; 32],   // needed for encryption, IDs and such stuff
+    right_panel: RightPanel,    // the right panel is the account info, like the name pfp last online blahblahblah
+    network_rx: Option<std::sync::mpsc::Receiver<String>>,   // receive messages
+    rt: Option<tokio::runtime::Handle>,     // send messages
+    my_token: Option<String>,   // cool thing for sharing your account
     token_expires: Option<u64>, // Unix timestamp when it expires
 }
 
 fn generate_token() -> String {
     use rand::Rng;
     let mut rng = rand::rng();
-    let a = NATO[rng.random_range(0..26)];
-    let b = NATO[rng.random_range(0..26)];
-    let c = NATO[rng.random_range(0..26)];
-    format!("{} {} {}", a, b, c)
+    let a = NATO[rng.random_range(0..26)]; // First part of the token. 1 in 26 letters, 1/26 chance to guess.
+    let b = NATO[rng.random_range(0..26)]; // Second part of the token.  26 * 25 = 650. 1/650 chance to guess.
+    let c = NATO[rng.random_range(0..26)]; // Third part of the token. 1/16250 chance to guess if my maths are right.
+    format!("{} {} {}", a, b, c)                                // Supposed to rotate every 5 minutes btw, codes work for 6 minutes (in case desynced)
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
 struct Contact {
-    name: String,
-    pubkey: Vec<u8>,
-    last_seen_ip: String,
-    data_port: u16,
+    name: String,   // the person's name
+    pubkey: Vec<u8>,    // public key, encryption thing
+    last_seen_ip: String,   // when were they last seen, not for reducing privacy but to know if the person is ignoring you or smth idk, I just added it
+    data_port: u16,     // the port that receives the stuff, basically you have an identification port (as a standart) and the data port, maybe the softest defense against spamming possible
     last_online: String,     // "2026-05-16/20:51" - looking time.
-    known_since: Option<String>, // Unix timestamp первого сообщения
+    known_since: Option<String>, // Unix timestamp of first message
     pfp_path: Option<String>, // profile pictures, also compressed because pictures fatty
     messages_path: String,    // basically where your chat history goes (dw, encrypted and compressed)
     media_cache_days: u32,  // to prevent your filesystem to go chunky
@@ -146,10 +156,10 @@ enum RightPanel {
 }
 
 
-
+// Timestamp formatting
 fn format_timestamp(timestamp: &str) -> String {
-    let msg_secs: u64 = timestamp.parse().unwrap_or(0);
-    let now_secs = SystemTime::now()
+    let msg_secs: u64 = timestamp.parse().unwrap_or(0); // This thing just makes timestamps be timestamps, not a bunch of UNIX numbers
+    let now_secs = SystemTime::now()    // this is just for more comfort while using, this is probably way easier to understand, innit?
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs();
@@ -157,31 +167,32 @@ fn format_timestamp(timestamp: &str) -> String {
     let diff = now_secs.saturating_sub(msg_secs);
 
     match diff {
-        0..=30 => "Now".to_string(),
-        31..=119 => "A minute ago".to_string(),
-        120..=1799 => format!("{} minutes ago", diff / 60),
-        1800..=3539 => "Half an hour ago".to_string(),
-        3540..=86399 => "An hour ago".to_string(),
+        0..=30 => "Now".to_string(), // 0-30 seconds counts as now I guess
+        31..=119 => "A minute ago".to_string(), // 30 seconds - almost 2 minutes.
+        120..=1799 => format!("{} minutes ago", diff / 60), // 2 minutes - almost 30 minutes.
+        1800..=3539 => "Half an hour ago".to_string(),  // 30 minutes - 45 (I think) minutes
+        3540..=86399 => "An hour ago".to_string(), // 45 - 60 minutes I think. I write comments only after writing the code, don't judge.
         86400..=172799 => {
-            // вчера — нужно chrono для hh:mm
+            // chrono doohickey
             "Yesterday".to_string()
         },
-        172800..=1296000 => format!("{} days ago", diff / 86400),
-        1296001..=1382400 => "Half a month ago".to_string(),
-        1382401..=2678400 => format!("{} days ago", diff / 86400),
-        _ => timestamp.to_string(), // старый timestamp как есть
+        172800..=1296000 => format!("{} days ago", diff / 86400), // Before half a month ago, after "yesterday".
+        1296001..=1382400 => "Half a month ago".to_string(), // 15-16 days if I'm correct.
+        1382401..=2678400 => format!("{} days ago", diff / 86400), // how many days ago?
+        _ => timestamp.to_string(), // leave old timestamps as they are
     }
 }
 
-fn save_contact(contact: &Contact) -> Result<(), Box<dyn std::error::Error>> {
+fn save_contact(contact: &Contact) -> Result<(), Box<dyn std::error::Error>> { // Saves contacts because sometimes the contact might not be written down in the .json
     let path = format!("contacts/{}.json", contact.name);
     let json = serde_json::to_string_pretty(contact)?;
     std::fs::write(path, json)?;
     Ok(())
 }
 
-fn save_messages(messages: &Vec<Message>, contact_name: &str, key: &[u8; 32])
-                 -> Result<(), Box<dyn std::error::Error>>
+// Message saving
+fn save_messages(messages: &Vec<Message>, contact_name: &str, key: &[u8; 32])   // that saves messages with encryption, compression and stuff, it's for chat history
+                 -> Result<(), Box<dyn std::error::Error>>                      // because this can work without internet, and we don't have servers. Saved in .bin
 {
     // 1. serialize
     let json = serde_json::to_vec(messages)?;
@@ -203,18 +214,19 @@ fn save_messages(messages: &Vec<Message>, contact_name: &str, key: &[u8; 32])
     file_data.extend(encrypted);
     std::fs::write(path, file_data)?;
 
-    Ok(())
+    Ok(())  // Ok
 }
 
-fn load_messages(contact_name: &str, key: &[u8; 32])
+// Message loading
+fn load_messages(contact_name: &str, key: &[u8; 32])    // Same as before, but reversed
                  -> Result<Vec<Message>, Box<dyn std::error::Error>>
 {
     // 1. reading
-    let file_data = std::fs::read(format!("msg/{}.bin", contact_name))?;
+    let file_data = std::fs::read(format!("msg/{}.bin", contact_name))?; // Read the file
 
     // 2. nonce,data...
-    let nonce_bytes = &file_data[..12];
-    let encrypted = &file_data[12..];
+    let nonce_bytes = &file_data[..12]; // Basically like a key but not. first 12 bytes.
+    let encrypted = &file_data[12..];   // The encrypted messages
 
     // 3. Encryption
     let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
@@ -223,19 +235,21 @@ fn load_messages(contact_name: &str, key: &[u8; 32])
         .map_err(|e| e.to_string())?;
 
     // 4. Unpack
-    let json = zstd::decode_all(compressed.as_slice())?;
+    let json = zstd::decode_all(compressed.as_slice())?; // think of it as unzipping a .zip
 
     // 5. Deserialize
-    let messages = serde_json::from_slice(&json)?;
-    Ok(messages)
+    let messages = serde_json::from_slice(&json)?; // format it back to what it should be
+    Ok(messages) // Ok
 }
 
+// Known since, not really a "useful" thing, but makes it cool, and you can know how much you know the person for, maybe convenience and QOL i guess
 fn format_known_since(timestamp: &str) -> String {
     let secs: i64 = timestamp.parse().unwrap_or(0);
     let dt = DateTime::from_timestamp(secs, 0).unwrap();
-    dt.format("Known since %d %B %Y").to_string()
+    dt.format("Known since %d %B %Y").to_string() // Known since 1 January 2001
 }
 
+// Short ID, a shorter version of publickey, as unique and used just for maybe quicker identification in some cases, precaution kinda
 fn short_id(pubkey: &[u8]) -> String {
     pubkey.iter().take(8)
         .map(|b| format!("{:02x}", b))
@@ -249,8 +263,8 @@ impl Linea {
         std::fs::create_dir_all("media/pfp").ok();
         std::fs::create_dir_all("msg").ok();
         let mut visuals = egui::Visuals::dark();
-        visuals.panel_fill = egui::Color32::from_rgb(18, 18, 24); // dark blue bg
-        visuals.window_fill = egui::Color32::from_rgb(18, 18, 24);
+        visuals.panel_fill = egui::Color32::from_rgb(18, 18, 24); // dark blue bg.
+        visuals.window_fill = egui::Color32::from_rgb(18, 18, 24); // STYLE
         cc.egui_ctx.set_visuals(visuals);
         let mut fonts = egui::FontDefinitions::default();
 
@@ -259,8 +273,8 @@ impl Linea {
 
         fonts.font_data.insert(
             "noto_sans".to_owned(),
-            egui::FontData::from_static(include_bytes!("/home/ffrxst/RustroverProjects/Linea/fonts/NotoSans-Regular.ttf")).into(),
-        );
+            egui::FontData::from_static(include_bytes!("/home/ffrxst/RustroverProjects/Linea/fonts/NotoSans-Regular.ttf")).into(), // Hardcoded, notosans because it renders
+        );                                                                                                                      // everything.
 
         fonts.families
             .get_mut(&egui::FontFamily::Proportional)
@@ -269,7 +283,7 @@ impl Linea {
 
         cc.egui_ctx.set_fonts(fonts);
         let mut contacts: Vec<Contact> = Vec::new();
-        if let Ok(entries) = std::fs::read_dir("contacts") {
+        if let Ok(entries) = std::fs::read_dir("contacts") {        // People, I prefer to call them contacts, don't judge
             for entry in entries.flatten() {
                 if let Ok(json) = std::fs::read_to_string(entry.path()) {
                     if let Ok(contact) = serde_json::from_str(&json) {
@@ -279,22 +293,14 @@ impl Linea {
             }
         }
 
-        let test_key: [u8; 32] = [42u8; 32]; // test, delete if I forgot to
-        app.master_key = [42u8; 32]; // also a hardcoded test
-        let test_msgs = vec![
-            Message { sender: "me".to_string(), text: "Привет".to_string(), timestamp: "2026-05-17".to_string() },
-            Message { sender: "me".to_string(), text: "Тест".to_string(), timestamp: "2026-05-17".to_string() },
-        ];
-        save_messages(&test_msgs, "test", &test_key).ok();
-
-        let mut app = Self::default();
+        let mut app = Self::default(); // All the inits ---\/
 
         app.rt = Some(rt);
         app.network_rx = Some(rx);
         app.people = contacts;
         app
     }
-    fn reload_contacts(&mut self) {
+    fn reload_contacts(&mut self) { // Reload contacts (people) because sometimes new contacts added don't render, rare but precaution.
         self.people.clear();
         if let Ok(entries) = std::fs::read_dir("contacts") {
             for entry in entries.flatten() {
@@ -308,7 +314,7 @@ impl Linea {
     }
 }
 
-impl eframe::App for Linea {
+impl eframe::App for Linea { // GUI stuff ---\/
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
         if let Some(rx) = &self.network_rx {
             while let Ok(msg) = rx.try_recv() {
@@ -328,7 +334,7 @@ impl eframe::App for Linea {
                     if ui.button("☰").clicked() {
                         self.show_menu = !self.show_menu;
                     }
-                    ui.label(greeting("ffrxst", true)); // потом из настроек
+                    ui.label(greeting("ffrxst", true)); // hardcoded for testing
                 });
                 ui.separator();
                 ui.add_space(10.0);
@@ -337,8 +343,8 @@ impl eframe::App for Linea {
 
                 for (i, person) in self.people.iter().enumerate() {
                     ui.add_space(4.0);
-                    let is_selected = self.selected_chat == i;
-                    let fill = if is_selected {
+                    let is_selected = self.selected_chat == i;      // Bright when selected, dark when unselected. Simple.
+                    let fill = if is_selected {                  // STYLE
                         egui::Color32::from_rgb(70, 60, 130)
                     } else {
                         egui::Color32::from_rgb(40, 37, 80)
@@ -381,21 +387,21 @@ impl eframe::App for Linea {
 
         if self.show_menu {
             egui::Window::new("##menu")
-                .fixed_pos([4.5, 35.0]) // под хедером
+                .fixed_pos([4.5, 35.0]) // under header, to keep it spacious and breathing
                 .fixed_size([280.0, ui.ctx().screen_rect().height()])
                 .title_bar(false)
                 .show(ui.ctx(), |ui| {
                     // pfp + имя
                     ui.horizontal(|ui| {
-                        ui.label("👤"); // потом реальный pfp
-                        ui.vertical(|ui| {
+                        ui.label("👤"); // Just a hardcode too, real one later
+                        ui.vertical(|ui| { // STYLE
                             ui.label("ffrxst");
                             ui.label("Online");
                         });
                     });
                     ui.separator();
-                    ui.label("⚙ Настройки");
-                    ui.label("🔗 Поделиться");
+                    ui.label("⚙ Settings");
+                    ui.label("🔗 Share");
                 });
         }
 
@@ -467,7 +473,7 @@ impl eframe::App for Linea {
                                 egui::Layout::right_to_left(egui::Align::TOP)
                                     .with_main_wrap(false),
                                 |ui| {
-                                    egui::Frame::new()
+                                    egui::Frame::new() // STYLE
                                         .fill(if is_me {
                                             egui::Color32::from_rgb(70, 60, 130)
                                         } else {
@@ -495,8 +501,8 @@ impl eframe::App for Linea {
         } else {
             egui::CentralPanel::default().show(ui.ctx(), |ui| {
                 ui.centered_and_justified(|ui| {
-                    ui.label("Choose a person you'd like to text");
-                });
+                    ui.label("Choose a person you'd like to text"); // Because it sometimes causes panic if you send a message to an unselected chat or smth like that
+                });                                                             // And I'm kinda lazy to play ping pong with stupid requests of users
             });
         }
     }
