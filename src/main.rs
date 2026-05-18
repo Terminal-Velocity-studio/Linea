@@ -10,8 +10,14 @@ use std::sync::{Arc, Mutex};
 use rand::RngExt; // Tokens and such
 // All-inclusive
 
+// If you fork this, mention the author (ffrxst), also can add the link to refer to the original.
+// Protected by the EUPL-1.2 license.
+
+// Fear no code, the comments are intended to give you the ideas and why is a part of the code here.
+// Built with support for dictatorship-affected countries, which restrict internet availability and forbid privacy. Includes encryption, compression, localized data
+// and complete decentralization. Own your data.
+// Sorry for if the code is too complicated and obscured. Use Ctrl+F, keywords are usually in the comments near sections.
 // STYLE marks "You can edit this to style it as you'd like", basically colors usually.
-// If you fork this, mention the author (ffrxst) 
 
 // The cool greetings, QOL convenience and so on, also tells you the part of the day I guess
 fn greeting(name: &str, friendly: bool) -> String {
@@ -58,8 +64,17 @@ fn main() {
 
     let handle = rt.handle().clone();
 
+    // Our Father, Which art in Heaven, hallowed be Thy Name.
+    // Thy kingdom come, Thy will be done in earth as it is in Heaven.
+    // Give us this day our daily bread and forgive us our debts,
+    // as we forgive our debtors. And lead us not into temptation;
+    // but deliver us from evil, and allow this async to work,
+    // for thine is the kingdom, and the power, and the glory, forever!
+    // Amen
+    // ✝
+
     rt.spawn(async move {
-        // ждём пока ctx появится
+        // wait for ctx
         loop {
             let ctx = ctx_holder_clone.lock().unwrap().clone();
             if let Some(ctx) = ctx {
