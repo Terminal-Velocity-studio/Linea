@@ -16,6 +16,7 @@ use rand::RngExt; // Tokens and such
 // Fear no code, the comments are intended to give you the ideas and why is a part of the code here.
 // Built with support for dictatorship-affected countries, which restrict internet availability and forbid privacy. Includes encryption, compression, localized data
 // and complete decentralization. Own your data.
+// Also part of the "Project Freedom" subdivision, which specializes in open source decentralized apps which are harder to ban than usual apps.
 // Sorry for if the code is too complicated and obscured. Use Ctrl+F, keywords are usually in the comments near sections.
 // STYLE marks "You can edit this to style it as you'd like", basically colors usually.
 
