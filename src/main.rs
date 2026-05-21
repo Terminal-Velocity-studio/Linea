@@ -338,7 +338,7 @@ impl Linea {
 
         fonts.font_data.insert(
             "noto_sans".to_owned(),
-            egui::FontData::from_static(include_bytes!("/home/ffrxst/RustroverProjects/Linea/fonts/NotoSans-Regular.ttf")).into(), // Hardcoded, notosans because it renders
+            egui::FontData::from_static(include_bytes!("../fonts/NotoSans-Regular.ttf")).into() // Hardcoded, notosans because it renders
         );                                                                                                                      // everything.
 
         fonts.families
