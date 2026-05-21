@@ -7,21 +7,25 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use chrono::{DateTime, Utc};
 use chrono::Timelike; // Timestamps
 use std::sync::{Arc, Mutex};
-use rand::RngExt; // Tokens and such
-// All-inclusive
-
-// If you fork this, mention the author (ffrxst), also can add the link to refer to the original.
-// Protected by the EUPL-1.2 license.
-
-// Fear no code, the comments are intended to give you the ideas and why is a part of the code here.
-// Built with support for dictatorship-affected countries, which restrict internet availability and forbid privacy. Includes encryption, compression, localized data
-// and complete decentralization. Own your data.
-// Also part of the "Project Freedom" subdivision, which specializes in open source decentralized apps which are harder to ban than usual apps.
-// Sorry for if the code is too complicated and obscured. Use Ctrl+F, keywords are usually in the comments near sections.
-// STYLE marks "You can edit this to style it as you'd like", basically colors usually.
+use rand::RngExt;
+/*
+ All-inclusive ---^
+ If you fork this, mention the author (ffrxst), also can add the link to refer to the original.
+ Built by a mechatronics engineering student.
+ Also part of the "Project Freedom" subdivision, which specializes in open source decentralized apps which are harder to ban than usual apps.
+ Protected by the EUPL-1.2 license.
+ Fear no code, the comments are intended to give you the ideas and why is a part of the code here.
+ Built with support for dictatorship-affected countries, which restrict internet availability and forbid privacy. Includes encryption, compression, localized data
+ and complete decentralization. Own your data.
+ For anyone wondering how is this supposed to work, this is intended to be spread via bittorrent networks, also works similarly (peer to peer, node to node.)
+ Also, this is also built to work even in case of a nuclear war. (Only if the device isn't fried by radiation, and you know how to make any electronic device
+ a router)
+ Sorry for if the code is too complicated and obscured. Use Ctrl+F, keywords are usually in the comments near sections.
+ STYLE marks "You can edit this to style it as you'd like", basically colors usually.
+ */
 
 // The cool greetings, QOL convenience and so on, also tells you the part of the day I guess
-fn greeting(name: &str, friendly: bool) -> String {
+fn greeting(name: &str, friendly: bool) -> String {     // Friendly and corporate versions. Friendly for humans, corporate for gingers because they have no soul
     let hour = chrono::Local::now().hour();
     let msg = match (hour, friendly) {
         (5..=8, false)  => "Good Morning,",
@@ -65,14 +69,38 @@ fn main() {
 
     let handle = rt.handle().clone();
 
-    // Our Father, Which art in Heaven, hallowed be Thy Name.
-    // Thy kingdom come, Thy will be done in earth as it is in Heaven.
-    // Give us this day our daily bread and forgive us our debts,
-    // as we forgive our debtors. And lead us not into temptation;
-    // but deliver us from evil, and allow this async to work,
-    // for thine is the kingdom, and the power, and the glory, forever!
-    // Amen
-    // ✝
+    async fn discover_node(target: &str) -> Option<String> {
+        let socket = tokio::net::UdpSocket::bind("0.0.0.0:0").await.ok()?;
+        socket.send_to(b"LINEA_HELLO", target).await.ok()?;
+        let mut buf = [0u8; 1024];
+        let (len, _) = socket.recv_from(&mut buf).await.ok()?;
+        let response = String::from_utf8_lossy(&buf[..len]);
+
+        if response.starts_with("LINEA_NODE:") {
+            let name = response[11..].to_string();
+            return Some(name);
+        }
+        None
+    }
+
+    // тест
+    rt.block_on(async {
+        match discover_node("192.168.1.72:1234").await {
+            Some(name) => println!("Found node: {}", name),
+            None => println!("No response"),
+        }
+    });
+
+    /*
+    Our Father, Which art in Heaven, hallowed be Thy Name.
+    Thy kingdom come, Thy will be done in earth as it is in Heaven.
+    Give us this day our daily bread and forgive us our debts,
+    as we forgive our debtors. And lead us not into temptation;
+    but deliver us from evil, and allow this async to work,
+    for thine is the kingdom, and the power, and the glory, forever!
+    Amen
+    ✝
+    */
 
     rt.spawn(async move {
         // wait for ctx
@@ -119,9 +147,19 @@ async fn send_udp(target: &str, data: &[u8]) {
     }
 }
 
+struct SpottedNode {
+    ip: String,         // you need the IP to know where to send, especially in LAN / STUN modes
+    name: String,       // displaying doohickey
+    last_seen: u64,    // kinda same thing as below ---\/
+    missed_pings: u8,  // used for guessing whether the node is live or "dead" (gone)
+}
+
 #[derive(Default)]
 struct Linea {
     input: String,
+    my_name: String,        // your name, for discovery (wouldn't be cool if there were 10 "Anonymous" in your network, innit?"
+    name_input: String,     // temporary to fix the login bug (skips name after first letter)
+    my_surname: String,     // optional.
     messages: Vec<Message>,  // Not string because format
     people: Vec<Contact>,   // people you know, the phone book basically
     show_menu: bool,        // is the menu shown?
@@ -132,6 +170,9 @@ struct Linea {
     rt: Option<tokio::runtime::Handle>,     // send messages
     my_token: Option<String>,   // cool thing for sharing your account
     token_expires: Option<u64>, // Unix timestamp when it expires
+    app_view: AppView,          // makes the windows a bool so you can't open at the same time settings, media and such, basically just improvements, especially for
+                                // overlay windows
+    spotted: Vec<SpottedNode>,  // Spotted node, basically "who am I seeing". Used for meeting people, since you have to know what IP to send the token to and such stuff.
 }
 
 fn generate_token() -> String {
@@ -287,6 +328,14 @@ impl Linea {
         let mut app = Self::default();
         app.selected_chat = usize::MAX;
 
+        app.my_token = Some(generate_token());
+        app.token_expires = Some(
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_secs() + 300
+        );
+
         fonts.font_data.insert(
             "noto_sans".to_owned(),
             egui::FontData::from_static(include_bytes!("/home/ffrxst/RustroverProjects/Linea/fonts/NotoSans-Regular.ttf")).into(), // Hardcoded, notosans because it renders
@@ -332,6 +381,27 @@ impl Linea {
 
 impl eframe::App for Linea { // GUI stuff ---\/
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
+        // в самом начале fn ui, до всего остального
+        if self.my_name.trim().is_empty() {
+            egui::CentralPanel::default().show(ui.ctx(), |ui| {
+                ui.centered_and_justified(|ui| {
+                    ui.vertical_centered(|ui| {
+                        ui.heading("Welcome to Linea");
+                        ui.add_space(20.0);
+                        ui.label("Enter your name to continue:");
+                        ui.text_edit_singleline(&mut self.name_input); // temporary, has to be here
+                        ui.add_space(10.0);
+                        if ui.button("Continue").clicked() && !self.name_input.trim().is_empty() {
+                            self.my_name = self.name_input.clone(); // only via button, to prevent misfires on first letter
+                            std::fs::create_dir_all("config").ok();
+                            std::fs::write("config/name.txt", &self.my_name).ok();
+                        }
+                    });
+                });
+            });
+            return;
+        }
+
         if let Some(rx) = &self.network_rx {
             while let Ok(msg) = rx.try_recv() {
                 self.messages.push(Message {
@@ -345,12 +415,23 @@ impl eframe::App for Linea { // GUI stuff ---\/
                 });
             }
         }
+
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs();
+
+        if self.token_expires.map_or(true, |exp| now >= exp) {
+            self.my_token = Some(generate_token());
+            self.token_expires = Some(now + 300);
+        }
+
             egui::SidePanel::left("chats_panel").show(ui.ctx(), |ui| {
                 ui.horizontal(|ui| {
                     if ui.button("☰").clicked() {
                         self.show_menu = !self.show_menu;
                     }
-                    ui.label(greeting("ffrxst", true)); // hardcoded for testing
+                    ui.label(greeting(&self.my_name, true));
                 });
                 ui.separator();
                 ui.add_space(10.0);
@@ -377,6 +458,7 @@ impl eframe::App for Linea { // GUI stuff ---\/
 
                     if response.response.interact(egui::Sense::click()).clicked() {
                         self.selected_chat = i;
+                        self.app_view = AppView::Chat;
                         if person.known_since.is_none() {
                             update_known_since = Some(i);
                         }
@@ -401,9 +483,178 @@ impl eframe::App for Linea { // GUI stuff ---\/
                 }
             });
 
+        match self.app_view {
+            AppView::Chat => {
+                // contact panel
+                egui::SidePanel::right("contact_card").show(ui.ctx(), |ui| {
+                    if self.selected_chat < self.people.len() {
+                        let contact = &self.people[self.selected_chat];
+                        // pfp круг сверху
+                        ui.add_space(20.0);
+                        ui.heading(&contact.name);
+                        ui.label(short_id(&contact.pubkey));
+                        ui.separator();
+                        ui.label(format!("Last seen: {}",
+                                         format_timestamp(&contact.last_online)));
+                        ui.label(format_known_since(&contact.known_since
+                            .as_deref().unwrap_or("0")));
+                    }
+                });
+                // bottom panel
+                if self.selected_chat < self.people.len() {
+                    egui::TopBottomPanel::bottom("input_panel").show(ui.ctx(), |ui| {
+                        ui.horizontal(|ui| {
+                            ui.text_edit_singleline(&mut self.input);
+                            let send = ui.button("Отправить").clicked()
+                                || ui.input(|i| i.key_pressed(egui::Key::Enter));
+
+                            if send && !self.input.trim().is_empty() {
+                                let msg = Message {
+                                    sender: "me".to_string(),
+                                    text: self.input.clone(),
+                                    timestamp: SystemTime::now()
+                                        .duration_since(UNIX_EPOCH)
+                                        .unwrap()
+                                        .as_secs()
+                                        .to_string(),
+                                };
+                                self.messages.push(msg.clone());
+                                self.input.clear();
+
+                                if self.selected_chat < self.people.len() {
+                                    let contact = &self.people[self.selected_chat];
+                                    let target = format!("{}:{}", contact.last_seen_ip, contact.data_port);
+                                    let data = serde_json::to_vec(&msg).unwrap_or_default();
+
+                                    if let Some(rt) = &self.rt {
+                                        rt.spawn(async move {
+                                            send_udp(&target, &data).await;
+                                        });
+                                    }
+                                }
+
+                                // сохраняем
+                                if self.selected_chat < self.people.len() {
+                                    let name = self.people[self.selected_chat].name.clone();
+                                    save_messages(&self.messages, &name, &self.master_key).ok();
+                                }
+                            }
+                        });
+                    });
+                    egui::CentralPanel::default().show(ui.ctx(), |ui| {
+                        ui.heading("Linea");
+                        ui.separator();
+                        ui.add_space(10.0);
+                        egui::ScrollArea::vertical()
+                            .stick_to_bottom(true)
+                            .show(ui, |ui| {
+                                for msg in &self.messages {
+                                    let is_me = msg.sender == "me";
+
+                                    ui.with_layout(
+                                        egui::Layout::right_to_left(egui::Align::TOP)
+                                            .with_main_wrap(false),
+                                        |ui| {
+                                            egui::Frame::new() // STYLE
+                                                .fill(if is_me {
+                                                    egui::Color32::from_rgb(70, 60, 130)
+                                                } else {
+                                                    egui::Color32::from_rgb(40, 37, 80)
+                                                })
+                                                .corner_radius(egui::CornerRadius::same(8))
+                                                .inner_margin(egui::Margin::symmetric(10, 8))
+                                                .show(ui, |ui| {
+                                                    ui.set_max_width(300.0);
+                                                    ui.vertical(|ui| {
+                                                        ui.label(if is_me { "Me" } else { &msg.sender });
+                                                        ui.label(&msg.text);
+                                                        ui.with_layout(egui::Layout::right_to_left(egui::Align::TOP), |ui| {
+                                                            ui.label(format_timestamp(&msg.timestamp));
+                                                        });
+                                                    });
+                                                });
+                                        }
+                                    );
+                                    ui.add_space(4.0);
+                                }
+                            });
+                        ui.add_space(10.0);
+                    });
+                } else {
+                    egui::CentralPanel::default().show(ui.ctx(), |ui| {
+                        ui.centered_and_justified(|ui| {
+                            ui.label("Choose a person you'd like to text"); // Because it sometimes causes panic if you send a message to an unselected chat or smth like that
+                        });                                                             // And I'm kinda lazy to play ping pong with stupid requests of users
+                    });
+                }
+            }
+            AppView::Sharing => {
+                egui::CentralPanel::default().show(ui.ctx(), |ui| {
+                    ui.heading("Share Account");
+                    // token here
+                });
+            }
+            AppView::Settings => {
+                egui::CentralPanel::default().show(ui.ctx(), |ui| {
+                    ui.heading("Settings");
+                    ui.separator();
+                    ui.add_space(10.0);
+
+                    ui.label("Your name:");
+                    ui.text_edit_singleline(&mut self.my_name);
+
+                    ui.label("Last name (optional):");
+                    ui.text_edit_singleline(&mut self.my_surname);
+
+                    if ui.button("Save").clicked() {
+                        // сохраняем в файл
+                        std::fs::write("config/name.txt", &self.my_name).ok();
+                    }
+                });
+            }
+            AppView::Media => {
+                egui::CentralPanel::default().show(ui.ctx(), |ui| {
+                    ui.heading("Media");
+                });
+            }
+        }
+
+        if self.app_view == AppView::Sharing {
+            egui::CentralPanel::default().show(ui.ctx(), |ui| {
+                ui.heading("Share Account");
+                ui.separator();
+                ui.label("Your token:");
+                if let Some(token) = &self.my_token {
+                    let now = SystemTime::now()
+                        .duration_since(UNIX_EPOCH)
+                        .unwrap()
+                        .as_secs();
+
+                    if let Some(expires) = self.token_expires {
+                        if now < expires {
+                            ui.heading(token);
+                            ui.label(format!("{} seconds left", expires - now));
+                        } else {
+                            self.my_token = None;
+                            self.token_expires = None;
+                        }
+                    }
+                }
+                if ui.button("Generate New Token").clicked() {
+                    self.my_token = Some(generate_token());
+                    self.token_expires = Some(
+                        SystemTime::now()
+                            .duration_since(UNIX_EPOCH)
+                            .unwrap()
+                            .as_secs() + 300
+                    );
+                }
+            });
+        }
+
         if self.show_menu {
             egui::Window::new("##menu")
-                .fixed_pos([4.5, 35.0]) // under header, to keep it spacious and breathing
+                .fixed_pos([35.0, 35.0]) // under header, to keep it spacious and breathing
                 .fixed_size([280.0, ui.ctx().screen_rect().height()])
                 .title_bar(false)
                 .show(ui.ctx(), |ui| {
@@ -416,110 +667,15 @@ impl eframe::App for Linea { // GUI stuff ---\/
                         });
                     });
                     ui.separator();
-                    ui.label("⚙ Settings");
-                    ui.label("🔗 Share");
-                });
-        }
-
-        egui::SidePanel::right("contact_card").show(ui.ctx(), |ui| {
-            if self.selected_chat < self.people.len() {
-                let contact = &self.people[self.selected_chat];
-                // pfp круг сверху
-                ui.add_space(20.0);
-                ui.heading(&contact.name);
-                ui.label(short_id(&contact.pubkey));
-                ui.separator();
-                ui.label(format!("Last seen: {}",
-                                 format_timestamp(&contact.last_online)));
-                ui.label(format_known_since(&contact.known_since
-                    .as_deref().unwrap_or("0")));
-            }
-        });
-        if self.selected_chat < self.people.len() {
-            egui::TopBottomPanel::bottom("input_panel").show(ui.ctx(), |ui| {
-                ui.horizontal(|ui| {
-                    ui.text_edit_singleline(&mut self.input);
-                    let send = ui.button("Отправить").clicked()
-                        || ui.input(|i| i.key_pressed(egui::Key::Enter));
-
-                    if send && !self.input.trim().is_empty() {
-                        let msg = Message {
-                            sender: "me".to_string(),
-                            text: self.input.clone(),
-                            timestamp: SystemTime::now()
-                                .duration_since(UNIX_EPOCH)
-                                .unwrap()
-                                .as_secs()
-                                .to_string(),
-                        };
-                        self.messages.push(msg.clone());
-                        self.input.clear();
-
-                        if self.selected_chat < self.people.len() {
-                            let contact = &self.people[self.selected_chat];
-                            let target = format!("{}:{}", contact.last_seen_ip, contact.data_port);
-                            let data = serde_json::to_vec(&msg).unwrap_or_default();
-
-                            if let Some(rt) = &self.rt {
-                                rt.spawn(async move {
-                                    send_udp(&target, &data).await;
-                                });
-                            }
-                        }
-
-                        // сохраняем
-                        if self.selected_chat < self.people.len() {
-                            let name = self.people[self.selected_chat].name.clone();
-                            save_messages(&self.messages, &name, &self.master_key).ok();
-                        }
+                    if ui.button("⚙ Settings").clicked() {
+                        self.app_view = AppView::Settings;
+                        self.show_menu = false;
+                    }
+                    if ui.button("🔗 Share").clicked() {
+                        self.app_view = AppView::Sharing;
+                        self.show_menu = false;
                     }
                 });
-            });
-            egui::CentralPanel::default().show(ui.ctx(), |ui| {
-                ui.heading("Linea");
-                ui.separator();
-                ui.add_space(10.0);
-                egui::ScrollArea::vertical()
-                    .stick_to_bottom(true)
-                    .show(ui, |ui| {
-                        for msg in &self.messages {
-                            let is_me = msg.sender == "me";
-
-                            ui.with_layout(
-                                egui::Layout::right_to_left(egui::Align::TOP)
-                                    .with_main_wrap(false),
-                                |ui| {
-                                    egui::Frame::new() // STYLE
-                                        .fill(if is_me {
-                                            egui::Color32::from_rgb(70, 60, 130)
-                                        } else {
-                                            egui::Color32::from_rgb(40, 37, 80)
-                                        })
-                                        .corner_radius(egui::CornerRadius::same(8))
-                                        .inner_margin(egui::Margin::symmetric(10, 8))
-                                        .show(ui, |ui| {
-                                            ui.set_max_width(300.0);
-                                            ui.vertical(|ui| {
-                                                ui.label(if is_me { "Me" } else { &msg.sender });
-                                                ui.label(&msg.text);
-                                                ui.with_layout(egui::Layout::right_to_left(egui::Align::TOP), |ui| {
-                                                    ui.label(format_timestamp(&msg.timestamp));
-                                                });
-                                            });
-                                        });
-                                }
-                            );
-                            ui.add_space(4.0);
-                        }
-                    });
-                ui.add_space(10.0);
-            });
-        } else {
-            egui::CentralPanel::default().show(ui.ctx(), |ui| {
-                ui.centered_and_justified(|ui| {
-                    ui.label("Choose a person you'd like to text"); // Because it sometimes causes panic if you send a message to an unselected chat or smth like that
-                });                                                             // And I'm kinda lazy to play ping pong with stupid requests of users
-            });
         }
     }
 }
