@@ -5,7 +5,7 @@
 contacts/
 media/
 msg/
-/config/
+config/
 *.bin
 # The .bin because your encrypted compressed chats are .bin
 *.txt
