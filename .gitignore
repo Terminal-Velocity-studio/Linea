@@ -8,6 +8,8 @@ msg/
 config/
 *.bin
 # The .bin because your encrypted compressed chats are .bin
+*.txt
+# Same thing as above, except it stores configs for example
 *.key
 # I think the word "key" says it all
 *.py
