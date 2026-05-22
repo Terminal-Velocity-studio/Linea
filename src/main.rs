@@ -1,7 +1,8 @@
+use std::io::Write;
 use eframe::egui; // GUI
-use aes_gcm::{Aes256Gcm, Key, Nonce};
-use aes_gcm::aead::{Aead, KeyInit, OsRng};
-use aes_gcm::aead::rand_core::RngCore; // Encryption
+use chacha20poly1305::{ChaCha20Poly1305, Key, Nonce}; // Hell yeah!!! encryption
+use chacha20poly1305::aead::{Aead, KeyInit, OsRng};
+use chacha20poly1305::aead::rand_core::RngCore;
 use serde_json::json;       // Used for saving people (contacts)
 use std::time::{SystemTime, UNIX_EPOCH};
 use chrono::{DateTime, Utc};
@@ -186,37 +187,36 @@ fn generate_token() -> String {
 
 #[derive(serde::Serialize, serde::Deserialize)]
 struct Contact {
-    name: String,   // the person's name
-    pubkey: Vec<u8>,    // public key, encryption thing
-    last_seen_ip: String,   // when were they last seen, not for reducing privacy but to know if the person is ignoring you or smth idk, I just added it
-    data_port: u16,     // the port that receives the stuff, basically you have an identification port (as a standart) and the data port, maybe the softest defense against spamming possible
-    last_online: String,     // "2026-05-16/20:51" - looking time.
-    known_since: Option<String>, // Unix timestamp of first message
-    pfp_path: Option<String>, // profile pictures, also compressed because pictures fatty
-    messages_path: String,    // basically where your chat history goes (dw, encrypted and compressed)
-    media_cache_days: u32,  // to prevent your filesystem to go chunky
+    id: u64,    // Contact ID, not UUID for privacy for example, can't link the 0001 number to someone precisely.
+    name: String,   // Name
+    pubkey: Vec<u8>,    // Public key
+    data_port: u16,     // Data port, the one that is not the 1234
+    last_known_ip: Option<String>,  // hint thing, just temporary, if lost - DHT Is the way
+    last_online: u64,   // Last online, convenience
+    known_since: Option<u64>,   // Convenience thing, since when do you know the guy
+    pfp_path: Option<String>,   // Where is the pfp stored
+    media_cache_days: u32,  // How long should you keep the message history for
 }
-
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
 struct Message {
-    sender: String,    // who said that
-    text: String,      // what it said
-    timestamp: String, // when it said
+    sender: String,     // who said it
+    text: String,   // what it said
+    timestamp: u64,  // when it said
 }
 
 #[derive(Default)]
 enum RightPanel {
-    ContactCard(usize),  // Guy card
-    MemberList,          // GC list
+    ContactCard(usize),  // Contact card
+    MemberList,          // GC list in... group chats.
     #[default]
     Hidden,
 }
 
 
 // Timestamp formatting
-fn format_timestamp(timestamp: &str) -> String {
-    let msg_secs: u64 = timestamp.parse().unwrap_or(0); // This thing just makes timestamps be timestamps, not a bunch of UNIX numbers
-    let now_secs = SystemTime::now()    // this is just for more comfort while using, this is probably way easier to understand, innit?
+fn format_timestamp(timestamp: u64) -> String {
+    let msg_secs = timestamp;
+    let now_secs = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs();
@@ -248,62 +248,79 @@ fn save_contact(contact: &Contact) -> Result<(), Box<dyn std::error::Error>> { /
 }
 
 // Message saving
-fn save_messages(messages: &Vec<Message>, contact_name: &str, key: &[u8; 32])   // that saves messages with encryption, compression and stuff, it's for chat history
-                 -> Result<(), Box<dyn std::error::Error>>                      // because this can work without internet, and we don't have servers. Saved in .bin
+fn save_messages(msg: &Message, contact_id: u64, key: &[u8; 32])
+                  -> Result<(), Box<dyn std::error::Error>>
 {
-    // 1. serialize
-    let json = serde_json::to_vec(messages)?;
+    let path = format!("msg/{}/current.bin", contact_id);
+    std::fs::create_dir_all(format!("msg/{}", contact_id)).ok();
 
-    // 2. compress
+    // сериализуем одно сообщение
+    let json = serde_json::to_vec(msg)?;
     let compressed = zstd::encode_all(json.as_slice(), 3)?;
 
-    // 3. encryption
-    let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
+    // шифруем с уникальным nonce
+    let cipher = ChaCha20Poly1305::new(Key::from_slice(key));
     let mut nonce_bytes = [0u8; 12];
     OsRng.fill_bytes(&mut nonce_bytes);
     let nonce = Nonce::from_slice(&nonce_bytes);
     let encrypted = cipher.encrypt(nonce, compressed.as_slice())
         .map_err(|e| e.to_string())?;
 
-    // 4. saving
-    let path = format!("msg/{}.bin", contact_name);
-    let mut file_data = nonce_bytes.to_vec();
-    file_data.extend(encrypted);
-    std::fs::write(path, file_data)?;
+    // формат: [4 байта длина][12 байт nonce][данные]
+    let mut file = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)?;
 
-    Ok(())  // Ok
+    let len = (encrypted.len() + 12) as u32;
+    file.write_all(&len.to_le_bytes())?;
+    file.write_all(&nonce_bytes)?;
+    file.write_all(&encrypted)?;
+
+    Ok(())
 }
 
 // Message loading
-fn load_messages(contact_name: &str, key: &[u8; 32])    // Same as before, but reversed
+fn load_messages(contact_id: u64, key: &[u8; 32])
                  -> Result<Vec<Message>, Box<dyn std::error::Error>>
 {
-    // 1. reading
-    let file_data = std::fs::read(format!("msg/{}.bin", contact_name))?; // Read the file
+    let path = format!("msg/{}/current.bin", contact_id);
+    let data = std::fs::read(&path)?;
+    let mut messages = Vec::new();
+    let mut pos = 0;
 
-    // 2. nonce,data...
-    let nonce_bytes = &file_data[..12]; // Basically like a key but not. first 12 bytes.
-    let encrypted = &file_data[12..];   // The encrypted messages
+    while pos < data.len() {
+        // block length reading
+        let len = u32::from_le_bytes(data[pos..pos+4].try_into()?) as usize;
+        pos += 4;
 
-    // 3. Encryption
-    let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
-    let nonce = Nonce::from_slice(nonce_bytes);
-    let compressed = cipher.decrypt(nonce, encrypted)
-        .map_err(|e| e.to_string())?;
+        // nonce
+        let nonce_bytes = &data[pos..pos+12];
+        pos += 12;
 
-    // 4. Unpack
-    let json = zstd::decode_all(compressed.as_slice())?; // think of it as unzipping a .zip
+        // encryption, hell yeah
+        let encrypted = &data[pos..pos+len-12];
+        pos += len - 12;
 
-    // 5. Deserialize
-    let messages = serde_json::from_slice(&json)?; // format it back to what it should be
-    Ok(messages) // Ok
+        // decrypt
+        let cipher = ChaCha20Poly1305::new(Key::from_slice(key));
+        let nonce = Nonce::from_slice(nonce_bytes);
+        if let Ok(compressed) = cipher.decrypt(nonce, encrypted) {
+            if let Ok(json) = zstd::decode_all(compressed.as_slice()) {
+                if let Ok(msg) = serde_json::from_slice(&json) {
+                    messages.push(msg);
+                }
+            }
+        }
+    }
+    Ok(messages)
 }
 
 // Known since, not really a "useful" thing, but makes it cool, and you can know how much you know the person for, maybe convenience and QOL i guess
-fn format_known_since(timestamp: &str) -> String {
-    let secs: i64 = timestamp.parse().unwrap_or(0);
+fn format_known_since(timestamp: u64) -> String {
+    let secs = timestamp as i64; // убери .parse(), просто каст
     let dt = DateTime::from_timestamp(secs, 0).unwrap();
-    dt.format("Known since %d %B %Y").to_string() // Known since 1 January 2001
+    dt.format("Known since %d %B %Y").to_string()
 }
 
 // Short ID, a shorter version of publickey, as unique and used just for maybe quicker identification in some cases, precaution kinda
@@ -312,6 +329,12 @@ fn short_id(pubkey: &[u8]) -> String {
         .map(|b| format!("{:02x}", b))
         .collect::<Vec<_>>()
         .join("")
+}
+
+fn generate_contact_id(pubkey: &[u8]) -> u64 {
+    let hash = blake3::hash(pubkey);
+    let bytes = hash.as_bytes();
+    u64::from_le_bytes(bytes[..8].try_into().unwrap())
 }
 
 impl Linea {
@@ -327,6 +350,11 @@ impl Linea {
 
         let mut app = Self::default();
         app.selected_chat = usize::MAX;
+
+        let name_path = "config/name.txt";
+        let name = std::fs::read_to_string(name_path).unwrap_or_default();
+        println!("Read name: '{}'", name);
+        app.my_name = name;
 
         app.my_token = Some(generate_token());
         app.token_expires = Some(
@@ -358,7 +386,7 @@ impl Linea {
             }
         }
 
-        let mut app = Self::default(); // All the inits ---\/
+        // All the inits ---\/
 
         app.rt = Some(rt);
         app.network_rx = Some(rx);
@@ -381,7 +409,6 @@ impl Linea {
 
 impl eframe::App for Linea { // GUI stuff ---\/
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
-        // в самом начале fn ui, до всего остального
         if self.my_name.trim().is_empty() {
             egui::CentralPanel::default().show(ui.ctx(), |ui| {
                 ui.centered_and_justified(|ui| {
@@ -411,7 +438,7 @@ impl eframe::App for Linea { // GUI stuff ---\/
                         .duration_since(UNIX_EPOCH)
                         .unwrap()
                         .as_secs()
-                        .to_string(),
+                        .to_string().parse().unwrap(),
                 });
             }
         }
@@ -462,8 +489,8 @@ impl eframe::App for Linea { // GUI stuff ---\/
                         if person.known_since.is_none() {
                             update_known_since = Some(i);
                         }
-                        let name = person.name.clone(); // используй person а не self.people[i]
-                        if let Ok(msgs) = load_messages(&name, &self.master_key) {
+                        let contact_id = self.people[i].id;
+                        if let Ok(msgs) = load_messages(contact_id, &self.master_key) {
                             self.messages = msgs;
                         } else {
                             self.messages = vec![];
@@ -477,7 +504,6 @@ impl eframe::App for Linea { // GUI stuff ---\/
                             .duration_since(UNIX_EPOCH)
                             .unwrap()
                             .as_secs()
-                            .to_string()
                     );
                     save_contact(&self.people[i]).ok();
                 }
@@ -489,15 +515,14 @@ impl eframe::App for Linea { // GUI stuff ---\/
                 egui::SidePanel::right("contact_card").show(ui.ctx(), |ui| {
                     if self.selected_chat < self.people.len() {
                         let contact = &self.people[self.selected_chat];
-                        // pfp круг сверху
                         ui.add_space(20.0);
                         ui.heading(&contact.name);
                         ui.label(short_id(&contact.pubkey));
                         ui.separator();
                         ui.label(format!("Last seen: {}",
-                                         format_timestamp(&contact.last_online)));
-                        ui.label(format_known_since(&contact.known_since
-                            .as_deref().unwrap_or("0")));
+                                         format_timestamp(contact.last_online)
+                        ));
+                        ui.label(format_known_since(contact.known_since.unwrap_or(0)));
                     }
                 });
                 // bottom panel
@@ -507,7 +532,6 @@ impl eframe::App for Linea { // GUI stuff ---\/
                             ui.text_edit_singleline(&mut self.input);
                             let send = ui.button("Отправить").clicked()
                                 || ui.input(|i| i.key_pressed(egui::Key::Enter));
-
                             if send && !self.input.trim().is_empty() {
                                 let msg = Message {
                                     sender: "me".to_string(),
@@ -516,14 +540,17 @@ impl eframe::App for Linea { // GUI stuff ---\/
                                         .duration_since(UNIX_EPOCH)
                                         .unwrap()
                                         .as_secs()
-                                        .to_string(),
+                                        .to_string().parse().unwrap(),
                                 };
                                 self.messages.push(msg.clone());
                                 self.input.clear();
 
                                 if self.selected_chat < self.people.len() {
                                     let contact = &self.people[self.selected_chat];
-                                    let target = format!("{}:{}", contact.last_seen_ip, contact.data_port);
+                                    let target = format!("{}:{}",
+                                                         contact.last_known_ip.as_deref().unwrap_or("0.0.0.0"),
+                                                         contact.data_port
+                                    );
                                     let data = serde_json::to_vec(&msg).unwrap_or_default();
 
                                     if let Some(rt) = &self.rt {
@@ -533,10 +560,9 @@ impl eframe::App for Linea { // GUI stuff ---\/
                                     }
                                 }
 
-                                // сохраняем
                                 if self.selected_chat < self.people.len() {
-                                    let name = self.people[self.selected_chat].name.clone();
-                                    save_messages(&self.messages, &name, &self.master_key).ok();
+                                    let contact_id = self.people[self.selected_chat].id;
+                                    save_messages(&msg, contact_id, &self.master_key).ok();
                                 }
                             }
                         });
@@ -569,7 +595,7 @@ impl eframe::App for Linea { // GUI stuff ---\/
                                                         ui.label(if is_me { "Me" } else { &msg.sender });
                                                         ui.label(&msg.text);
                                                         ui.with_layout(egui::Layout::right_to_left(egui::Align::TOP), |ui| {
-                                                            ui.label(format_timestamp(&msg.timestamp));
+                                                            ui.label(format_timestamp(msg.timestamp));
                                                         });
                                                     });
                                                 });
@@ -676,6 +702,6 @@ impl eframe::App for Linea { // GUI stuff ---\/
                         self.show_menu = false;
                     }
                 });
-        }
+        };
     }
 }

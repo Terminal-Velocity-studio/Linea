@@ -5,12 +5,13 @@
 contacts/
 media/
 msg/
+config/
 *.bin
 # The .bin because your encrypted compressed chats are .bin
 *.key
 # I think the word "key" says it all
 *.py
-# I use python for sending on my second laptop for tests, remove if
-# you feel like using it.
+# I use python for sending on my second laptop for tests, remove if you feel like using it.
 
+# IDE stuff
 .idea
